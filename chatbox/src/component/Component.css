@@ -1,0 +1,39 @@
+.g_button{
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 4px;
+    border: none;
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+    transition: background-color 0.3s ease;
+}
+.g_button:hover {
+    background-color: #0056b3;
+  }
+
+
+#shouts .list{
+    height: 100vh;
+    overflow-y: scroll;
+}
+
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+#shouts .list::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Hide scrollbar for IE, Edge and Firefox */
+  #shouts .list {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+
+#shout_fights .messages{
+    height: 85vh;
+    font-size: small;
+    overflow-y: scroll;
+}
+
