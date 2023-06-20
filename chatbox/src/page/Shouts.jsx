@@ -1,15 +1,13 @@
-import React,{useState} from "react";
+import React, { useState } from "react";
 import ShoutFights from "../component/ShoutFights";
 import ShoutList from "../component/ShoutLists";
 
 function Shouts() {
-
   const [isShoutFightOpen, setIsShoutFightOpen] = useState(false);
 
   const handleListClick = () => {
     setIsShoutFightOpen(!isShoutFightOpen);
   };
-
 
   return (
     <div className="container-fluid" id="shouts">
@@ -17,11 +15,7 @@ function Shouts() {
         <div className="d-none d-md-block col-md-6 col-lg-5 col-xl-4 mt-auto message">
           <ShoutFights />
         </div>
-        {/* <div className="col col-md-6 col-lg  col-xl-5 pt-5 list">
-          <div className="pt-5 d-lg-none"></div>
-          <ShoutList />
-        </div> */}
-     <div
+        <div
           className={`col col-md-6 col-lg col-xl-5 pt-5 list ${
             isShoutFightOpen ? "d-none d-md-block" : ""
           }`}
@@ -29,17 +23,15 @@ function Shouts() {
           <div className="pt-5 d-lg-none"></div>
           <ShoutList onItemClick={handleListClick} />
         </div>
-
       </div>
 
       <div className="d-md-none position-absolute top-50 start-50 translate-middle bg-dark  col-12">
-      {isShoutFightOpen && (
+        {isShoutFightOpen && (
           <div className="mt-5">
-            <ShoutFights onCloseClick={handleListClick}/>
+            <ShoutFights onCloseClick={handleListClick} />
           </div>
         )}
-       
-        </div>
+      </div>
     </div>
   );
 }

@@ -102,21 +102,29 @@ function ResponsiveDrawer(props) {
         <Typography display={"flex"} textAlign={"start"}>
           Vimal vimal@gmail.com
         </Typography>
+        <Link to="/user/setting"
+         className="text-decoration-none text-light" >
         <SettingsIcon sx={{ alignSelf: "bottom" }} />
+        </Link>
+        
       </Toolbar>
       <Divider />
       <List>
-        {["Shouts", "Create Shouts", "Recent Shouts"].map((text, index) => (
-          <ListItem key={text} disablePadding>
+        {[
+          { text: "Shouts", path: "" },
+          { text: "Create Shouts", path: "createshouts" },
+          { text: "Recent Shouts", path: "recentshouts" },
+        ].map((Item, index) => (
+          <ListItem key={Item.text} disablePadding>
             <Link
-              to={`/user/${text}`}
+              to={`/user/${Item.path}`}
               className="text-decoration-none text-light"
             >
               <ListItemButton>
                 <ListItemIcon>
                   {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
                 </ListItemIcon>
-                <ListItemText primary={text} />
+                <ListItemText primary={Item.text} />
               </ListItemButton>
             </Link>
           </ListItem>
@@ -124,7 +132,10 @@ function ResponsiveDrawer(props) {
       </List>
       <Divider />
       <List>
-        {[{text:"Gossipers",path:"gossipers"},{text:"Group Gossips",path:"groups"} ].map((Items, index) => (
+        {[
+          { text: "Gossipers", path: "gossipers" },
+          { text: "Group Gossips", path: "groups" },
+        ].map((Items, index) => (
           <ListItem key={Items.text} disablePadding>
             <Link
               to={`/user/${Items.path}`}

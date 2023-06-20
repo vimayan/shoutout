@@ -1,6 +1,6 @@
 import React,{useState} from "react";
 import ShoutFights from "../component/ShoutFights";
-import ShoutList from '../component/ShoutLists';
+import ContactList from "../component/ContactList";
 
 function Gossipers() {
     const [isShoutFightOpen, setIsShoutFightOpen] = useState(false);
@@ -11,16 +11,16 @@ function Gossipers() {
   
     return (  <div className="container-fluid" id="shouts">
     <div className="row position-relative">
-      <div className="d-none d-md-block col-md-6 col-lg-5 col-xl-4 mt-auto message">
+      <div className="d-none d-md-block col-md-7 col-xl-5 mt-auto message">
         <ShoutFights />
       </div>
    <div
-        className={`col col-md-6 col-lg col-xl-5 pt-5 list ${
+        className={`col col-md-5 col-xl-4 pt-5 list ${
           isShoutFightOpen ? "d-none d-md-block" : ""
         }`}
       >
         <div className="pt-5 d-lg-none"></div>
-        <ShoutList onItemClick={handleListClick} />
+        <ContactList onItemClick={handleListClick} />
       </div>
 
     </div>
