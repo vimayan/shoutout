@@ -11,13 +11,13 @@ export default function ContactList(props) {
   return (
     <List sx={{ bgcolor: "background.paper" }}>
       {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((value, index) => (
-        <>
+        <React.Fragment key={value}>
           <ListItem
             key={index}
             onClick={props.onItemClick}
-           sx={{
-                alignItems:"flex-start",
-                cursor:"pointer"
+            sx={{
+              alignItems: "flex-start",
+              cursor: "pointer",
             }}
           >
             <ListItemAvatar>
@@ -41,7 +41,7 @@ export default function ContactList(props) {
             />
           </ListItem>
           <Divider variant="inset" component="li" />
-        </>
+        </React.Fragment>
       ))}
     </List>
   );

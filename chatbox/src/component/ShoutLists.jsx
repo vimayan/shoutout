@@ -8,7 +8,7 @@ export default function ShoutList(props) {
   return (
     <List sx={{ bgcolor: "background.paper" }}>
       {[1, 2, 3, 4, 5, 6].map((value, index) => (
-        <ListItem key={index} >
+        <ListItem key={value} >
           <Box onClick={props.onItemClick} sx={{cursor:"pointer"}}>
           <Shout />
           </Box>
