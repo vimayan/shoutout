@@ -5,9 +5,114 @@ import GossipContext from "./GossipContext";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 
 function GossipAction(props) {
+  const chat = [
+    {
+      name: "contact1",
+      lastChat: [
+        { user: "me", text: "hello here i am" },
+        { user: "me", text: "whats new" },
+        { user: "me", text: "tell me something" },
+      ],
+    },
+    {
+      name: "contact2",
+      lastChat: [
+        { user: "me", text: "hello here i am" },
+        { user: "me", text: "whats new" },
+        { user: "me", text: "tell me something" },
+      ],
+    },
+    {
+      name: "contact3",
+      lastChat: [
+        { user: "me", text: "hello here i am" },
+        { user: "me", text: "whats new" },
+        { user: "me", text: "tell me something" },
+      ],
+    },
+    {
+      name: "contact4",
+      lastChat: [
+        { user: "me", text: "hello here i am" },
+        { user: "me", text: "whats new" },
+        { user: "me", text: "tell me something" },
+      ],
+    },
+    {
+      name: "contact5",
+      lastChat: [
+        { user: "me", text: "hello here i am" },
+        { user: "me", text: "whats new" },
+        { user: "me", text: "tell me something" },
+      ],
+    },
+    {
+      name: "contact6",
+      lastChat: [
+        { user: "me", text: "hello here i am" },
+        { user: "me", text: "whats new" },
+        { user: "me", text: "tell me something" },
+      ],
+    },
+    {
+      name: "contact7",
+      lastChat: [
+        { user: "me", text: "hello here i am" },
+        { user: "me", text: "whats new" },
+        { user: "me", text: "tell me something" },
+      ],
+    },
+    {
+      name: "contact8",
+      lastChat: [
+        { user: "me", text: "hello here i am" },
+        { user: "me", text: "whats new" },
+        { user: "me", text: "tell me something" },
+      ],
+    },
+  ];
+
+  const chats = [
+    {
+      contact1: [
+        { user: "me", text: "hello here i am" },
+        { user: "contact1", text: "hi superb" },
+        { user: "me", text: "whats new" },
+        { user: "contact1", text: "nothing special" },
+        { user: "me", text: "tell me something" },
+      ],
+    },
+    {
+      contact2: [
+        { user: "me", text: "hello here i am" },
+        { user: "contact2", text: "hi superb" },
+        { user: "me", text: "whats new" },
+        { user: "contact2", text: "nothing special" },
+        { user: "me", text: "tell me something" },
+      ],
+    },
+    {
+      contact3: [
+        { user: "me", text: "hello here i am" },
+        { user: "contact2", text: "hi superb" },
+        { user: "me", text: "whats new" },
+        { user: "contact2", text: "nothing special" },
+        { user: "me", text: "tell me something" },
+      ],
+    },
+    {
+      contact4: [
+        { user: "me", text: "hello here i am" },
+        { user: "contact2", text: "hi superb" },
+        { user: "me", text: "whats new" },
+        { user: "contact2", text: "nothing special" },
+        { user: "me", text: "tell me something" },
+      ],
+    },
+  ];
   const Gossip = {
-    contacts: [],
-    chatbox: [],
+    contacts: [...chat],
+    chatbox: [...chats],
     files: [],
     message: [],
     time: new Date(),
@@ -23,6 +128,10 @@ function GossipAction(props) {
   const setTime = (time) => {
     dispatch({ type: "SET_TIME", payload: time });
   };
+  const setChat=()=>{
+
+    
+  }
 
   const handleAttachment = (e) => {
     const selectedFiles = Array.from(e.target.files);
@@ -34,7 +143,7 @@ function GossipAction(props) {
     dispatch({ type: "REMOVE_FILES", payload: file });
   };
 
-  const send = (text,audio) => {
+  const send = (text, audio) => {
     // console.log(state.files);
     // console.log(text);
     if (state.files.length !== 0 || text.length !== 0) {
@@ -61,7 +170,7 @@ function GossipAction(props) {
         } else if (fileType === "audio") {
           return {
             user: "sender",
-            html: <audio src={URL.createObjectURL(file) } controls />,
+            html: <audio src={URL.createObjectURL(file)} controls />,
             attachment: true,
           };
         } else if (fileType === "application" && file.name.endsWith(".pdf")) {
@@ -110,12 +219,12 @@ function GossipAction(props) {
       dispatch({ type: "SEND_MESSAGE", payload: messages });
       // Clear files
       dispatch({ type: "CLEAR_FILES" });
-    } 
-    
-    else if (audio) {
+    } else if (audio) {
       const messages = {
         user: "sender",
-        html: <audio src={URL.createObjectURL(audio)} controls className="col-12"/>,
+        html: (
+          <audio src={URL.createObjectURL(audio)} controls className="col-12" />
+        ),
         attachment: true,
       };
 
@@ -134,7 +243,7 @@ function GossipAction(props) {
         time: state.time,
         handleAttachment,
         removeFile,
-        send
+        send,
       }}
     >
       {props.children}

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useContext } from "react";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import Divider from "@mui/material/Divider";
@@ -6,11 +6,17 @@ import ListItemText from "@mui/material/ListItemText";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
 import Avatar from "@mui/material/Avatar";
 import Typography from "@mui/material/Typography";
+import GossipContext from "../context/gossipers/GossipContext";
 
 export default function ContactList(props) {
+
+  const gossipContext = useContext(GossipContext);
+
+  const { contacts, chatbox, message, files } = gossipContext;
+
   return (
     <List sx={{ bgcolor: "background.paper" }}>
-      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((value, index) => (
+      {contacts.map((value, index) => (
         <React.Fragment key={value}>
           <ListItem
             key={index}
@@ -24,18 +30,18 @@ export default function ContactList(props) {
               <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
             </ListItemAvatar>
             <ListItemText
-              primary="Brunch this weekend?"
+              primary={`${value.name}`}
               secondary={
                 <React.Fragment>
-                  <Typography
+                  {/* <Typography
                     sx={{ display: "inline" }}
                     component="span"
                     variant="body2"
                     color="text.primary"
                   >
-                    Ali Connors
-                  </Typography>
-                  {" — I'll be in your neighborhood doing errands this…"}
+                   {value.lastChat[0].text||''}
+                  </Typography> */}
+                  {value.lastChat.slice(-1)[0].text||''}
                 </React.Fragment>
               }
             />

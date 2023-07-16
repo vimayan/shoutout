@@ -23,9 +23,21 @@ const userSchema = mongoose.Schema({
     required: true,
     default: false,
   },
+  contacts: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "user",
+    },
+  ],
+  groups: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "groups",
+    },
+  ],
 });
 
-const tokenSchema = mongoose.Schema({
+const shoutSchema = mongoose.Schema({
   userid: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "user",
@@ -33,46 +45,46 @@ const tokenSchema = mongoose.Schema({
     unique: true,
   },
 
-  token: { type: String, required: true },
+  chatbox: [
+    {
+      userid: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "user",
+        required: true,
+        unique: true,
+      },
+      text: { type: String, required: true },
+      file: { type: URL },
+    },
+  ],
 
   createdAt: { type: Date, default: Date.now(), expires: 36000 },
 });
 
-const urlSchema = mongoose.Schema({
-  userid: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "user",
-  },
+const groupSchema = mongoose.Schema({
+  users: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "user",
+    },
+  ],
 
-  tinyUrl: {
-    type: String,
-    required: true,
-  },
-  longUrl: {
-    type: String,
-    required: true,
-  },
-  clickCount: {
-    type: Number,
-    required: true,
-    default: 0,
-  },
+  // chatbox: [
+  //   {
+  //     userid: {
+  //       type: mongoose.Schema.Types.ObjectId,
+  //       ref: "user",
+  //       required: true,
+  //       unique: true,
+  //     },
+  //     text: { type: String, required: true },
+  //     file: { type: URL },
+  //   },
+  // ],
 });
-
-
-
-const countSchema = mongoose.Schema({
-  viewCount: {
-    type:Number,
-    default: 0,
-  }
-});
-
-
 
 module.exports = {
   UserSchema: mongoose.model("user", userSchema),
-  TokenSchema: mongoose.model("token", tokenSchema),
-  UrlSchema: mongoose.model("url", urlSchema),
-  CountSchema: mongoose.model("viewcount", countSchema),
+  ShoutSchema: mongoose.model("shouts", shoutSchema),
+  GroupSchema: mongoose.model("groups", groupSchema),
 };

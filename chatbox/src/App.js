@@ -18,9 +18,9 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Landing />} />
-          {/* <Route path="/login" element={<Login />} /> */}
-          <Route path="/register" element={<Register />} />
-          <Route path="/forgetpassword" element={<ForgetPassword />} />
+          {/* <Route path="login" element={<Login />} /> */}
+          <Route path="register" element={<Register />} />
+          <Route path="forgetpassword" element={<ForgetPassword />} />
 
           <Route path="/:user/" element={<GossipPannel />}>
             <Route index element={<Shouts />} />
