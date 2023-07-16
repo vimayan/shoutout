@@ -1,9 +1,24 @@
 const GossipReducer = (state, action) => {
   switch (action.type) {
+    case "SELECT_MESSAGE":
+      return {
+        ...state,
+        message: action.payload,
+      };
+    case "UPDATE_MESSAGE":
+      return {
+        ...state,
+        chatbox: {...state.chatbox,...action.payload},
+      };
+      case "SELECT_CHAT_ID":
+        return {
+          ...state,
+          chatId: action.payload,
+        };
     case "SEND_MESSAGE":
       return {
         ...state,
-        message: [...state.message, ...action.payload]
+        message: [...state.message, ...action.payload],
       };
     case "ADD_FILES":
       return {

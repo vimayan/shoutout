@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import MicIcon from "@mui/icons-material/Mic";
 import SendIcon from "@mui/icons-material/Send";
@@ -9,7 +9,7 @@ import GossipContext from "../context/gossipers/GossipContext";
 function ShoutFights({ onCloseClick }) {
   const gossipContext = useContext(GossipContext);
 
-  const { handleAttachment, removeFile, send, message, files } = gossipContext;
+  const { handleAttachment, removeFile, send, message, files,chatId } = gossipContext;
   const [recording, setRecording] = useState(false);
   const audioRef = useRef(null);
   const [text, setText] = useState("");
@@ -74,27 +74,28 @@ function ShoutFights({ onCloseClick }) {
         </button>
         <div className="col-12 py-5 messages">
           <div className="container-fluid py-5 py-md-auto" id="chat_body">
-            {message.map((e, i) =>
-              e.user === "user"?.toLowerCase() ? (
-                <div key={i} className="row mb-4 text-start">
-                  <div className="col-8">
-                    <div className="">
-                      <p>{e.text}</p>
-                      <time>{e.user}</time>
+            {message &&
+              message.map((e, i) =>
+                e.user === "user"?.toLowerCase() ? (
+                  <div key={i} className="row mb-4 text-start">
+                    <div className="col-8">
+                      <div className="">
+                        <p>{e.text}</p>
+                        {/* <time>{e.user}</time> */}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ) : (
-                <div key={i} className="row mb-4">
-                  <div className="col-8 ms-auto text-end">
-                    <div className="">
-                      {e.html}
-                      <p>{e.text}</p>
+                ) : (
+                  <div key={i} className="row mb-4">
+                    <div className="col-8 ms-auto text-end">
+                      <div className="">
+                        {e.html}
+                        <p>{e.text}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              )
-            )}
+                )
+              )}
           </div>
         </div>
         <div className="col px-0 mt-auto">
@@ -144,7 +145,7 @@ function ShoutFights({ onCloseClick }) {
             <button
               className="btn btn-success"
               onClick={() => {
-                send(text);
+                send(text,chatId);
                 setText("");
               }}
             >

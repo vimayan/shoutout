@@ -1,19 +1,25 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import ShoutFights from "../component/ShoutFights";
 import ContactList from "../component/ContactList";
+import GossipContext from "../context/gossipers/GossipContext";
 
 function Gossipers() {
+  const gossipContext = useContext(GossipContext);
+
+  const { setChat,contacts } = gossipContext;
   const [isShoutFightOpen, setIsShoutFightOpen] = useState(false);
 
   const handleListClick = () => {
     setIsShoutFightOpen(!isShoutFightOpen);
   };
-
+  useEffect(() => {
+    setChat(contacts[0].user_id)
+  },[]);
   return (
     <div className="container-fluid" id="shouts">
       <div className="row position-relative">
         <div className="d-none d-md-block col-md-7 col-xl-5 mt-auto message">
-          <ShoutFights />
+          <ShoutFights/>
         </div>
         <div
           className={`col col-md-5 col-xl-4 pt-5 list ${

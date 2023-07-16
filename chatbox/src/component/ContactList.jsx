@@ -5,22 +5,20 @@ import Divider from "@mui/material/Divider";
 import ListItemText from "@mui/material/ListItemText";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
 import Avatar from "@mui/material/Avatar";
-import Typography from "@mui/material/Typography";
+// import Typography from "@mui/material/Typography";
 import GossipContext from "../context/gossipers/GossipContext";
 
 export default function ContactList(props) {
-
   const gossipContext = useContext(GossipContext);
 
-  const { contacts, chatbox, message, files } = gossipContext;
+  const { contacts,chatbox,setChat } = gossipContext;
 
   return (
     <List sx={{ bgcolor: "background.paper" }}>
       {contacts.map((value, index) => (
-        <React.Fragment key={value}>
+        <React.Fragment key={value.user_id}>
           <ListItem
-            key={index}
-            onClick={props.onItemClick}
+            onClick={()=>{props.onItemClick();setChat(value.user_id)}}
             sx={{
               alignItems: "flex-start",
               cursor: "pointer",
@@ -33,15 +31,9 @@ export default function ContactList(props) {
               primary={`${value.name}`}
               secondary={
                 <React.Fragment>
-                  {/* <Typography
-                    sx={{ display: "inline" }}
-                    component="span"
-                    variant="body2"
-                    color="text.primary"
-                  >
-                   {value.lastChat[0].text||''}
-                  </Typography> */}
-                  {value.lastChat.slice(-1)[0].text||''}
+                  {(chatbox[value.user_id] &&
+                    chatbox[value.user_id].slice(-1)[0].text) ||
+                    ""}
                 </React.Fragment>
               }
             />
