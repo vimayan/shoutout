@@ -4,7 +4,7 @@ const server = require("http").createServer(app);
 const { initialize } = require("./socket");
 const cors = require("cors");
 const morgan = require("morgan");
-const route = require("./route/router");
+const route = require("./router/router");
 const mongoose = require("mongoose");
 
 initialize(server);

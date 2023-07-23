@@ -1,4 +1,4 @@
-const GossipReducer = (state, action) => {
+const GroupReducer = (state, action) => {
   switch (action.type) {
     case "SELECT_MESSAGE":
       return {
@@ -53,4 +53,4 @@ const GossipReducer = (state, action) => {
   }
 };
 
-export default GossipReducer;
+export default GroupReducer;

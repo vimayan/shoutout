@@ -40,43 +40,43 @@ function GossipAction(props) {
     },
   ];
 
-  const chats = {
-    1: [
-      { user: "user", text: "hello here i am 1" },
-      { user: "contact1", text: "hi superb" },
-      { user: "user", text: "whats new" },
-      { user: "contact1", text: "nothing special" },
-      { user: "user", text: "tell me something" },
-    ],
+  // const chats = {
+  //   1: [
+  //     { user: "user", text: "hello here i am 1" },
+  //     { user: "contact1", text: "hi superb" },
+  //     { user: "user", text: "whats new" },
+  //     { user: "contact1", text: "nothing special" },
+  //     { user: "user", text: "tell me something" },
+  //   ],
 
-    2: [
-      { user: "user", text: "hello here i am 2" },
-      { user: "contact2", text: "hi superb" },
-      { user: "user", text: "whats new" },
-      { user: "contact2", text: "nothing special" },
-      { user: "user", text: "tell me something" },
-    ],
+  //   2: [
+  //     { user: "user", text: "hello here i am 2" },
+  //     { user: "contact2", text: "hi superb" },
+  //     { user: "user", text: "whats new" },
+  //     { user: "contact2", text: "nothing special" },
+  //     { user: "user", text: "tell me something" },
+  //   ],
 
-    3: [
-      { user: "user", text: "hello here i am 3" },
-      { user: "contact3", text: "hi superb" },
-      { user: "user", text: "whats new" },
-      { user: "contact3", text: "nothing special" },
-      { user: "user", text: "tell me something" },
-    ],
+  //   3: [
+  //     { user: "user", text: "hello here i am 3" },
+  //     { user: "contact3", text: "hi superb" },
+  //     { user: "user", text: "whats new" },
+  //     { user: "contact3", text: "nothing special" },
+  //     { user: "user", text: "tell me something" },
+  //   ],
 
-    4: [
-      { user: "user", text: "hello here i am 4" },
-      { user: "contact4", text: "hi superb" },
-      { user: "user", text: "whats new" },
-      { user: "contact4", text: "nothing special" },
-      { user: "user", text: "tell me something" },
-    ],
-  };
+  //   4: [
+  //     { user: "user", text: "hello here i am 4" },
+  //     { user: "contact4", text: "hi superb" },
+  //     { user: "user", text: "whats new" },
+  //     { user: "contact4", text: "nothing special" },
+  //     { user: "user", text: "tell me something" },
+  //   ],
+  // };
 
   const Gossip = {
     contacts: [...chat],
-    chatbox: { ...chats },
+    chatbox: {},
     files: [],
     message: [],
     chatId: null,
@@ -109,7 +109,7 @@ function GossipAction(props) {
     dispatch({ type: "REMOVE_FILES", payload: file });
   };
 
-  const send = (text, chat_id, audio) => {
+  const send = ({ chat_id, text = "", audio = null }) => {
     // console.log(state.files);
     // console.log(text);
     if (state.files.length !== 0 || text.length !== 0) {
@@ -189,10 +189,13 @@ function GossipAction(props) {
       console.log(chat_id);
       const chatBox = { ...state.chatbox };
       const updatedChat = {};
-      updatedChat[chat_id] = [...chatBox[chat_id], ...messages];
+      updatedChat[chat_id] = chatBox[chat_id]
+        ? [...chatBox[chat_id], ...messages]
+        : [...messages];
       console.log(updatedChat);
       dispatch({ type: "UPDATE_MESSAGE", payload: updatedChat });
     } else if (audio) {
+      console.log(audio);
       const messages = {
         user: "sender",
         html: (
@@ -200,13 +203,14 @@ function GossipAction(props) {
         ),
         attachment: true,
       };
+      console.log(messages);
 
       dispatch({ type: "SEND_MESSAGE", payload: [messages] });
 
       //update chatbox
       const chatBox = { ...state.chatbox };
       const updatedChat = {};
-      updatedChat[chat_id] = [...chatBox[chat_id], ...messages];
+      updatedChat[chat_id] = [...chatBox[chat_id], { ...messages }];
       console.log(updatedChat);
       dispatch({ type: "UPDATE_MESSAGE", payload: updatedChat });
     }

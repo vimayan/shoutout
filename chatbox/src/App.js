@@ -10,7 +10,8 @@ import GossipPannel from "./component/GossipPanel";
 import Shouts from "./page/Shouts";
 import Gossipers from "./page/Gossipers";
 import Landing from "./page/Landing";
-import GroupGossips from "./page/GroupGossips";
+import GossipGroups from "./page/GossipGroups";
+import Login from "./page/Login";
 
 function App() {
   return (
@@ -18,14 +19,14 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Landing />} />
-          {/* <Route path="login" element={<Login />} /> */}
+          <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
           <Route path="forgetpassword" element={<ForgetPassword />} />
 
           <Route path="/:user/" element={<GossipPannel />}>
             <Route index element={<Shouts />} />
             <Route path="gossipers" element={<Gossipers />} />
-            <Route path="groups" element={<GroupGossips />} />
+            <Route path="groups" element={<GossipGroups />} />
             <Route path="settings" element={<Gossipers />} />
           </Route>
 

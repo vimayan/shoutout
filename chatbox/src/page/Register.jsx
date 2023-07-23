@@ -18,8 +18,8 @@ import { useNavigate } from "react-router-dom";
 
 export default function Register() {
   const [register, setRegister] = useState(false);
-  const [data,setData] = useState('')
-  const [type,setType] = useState('success')
+  const [data, setData] = useState("");
+  const [type, setType] = useState("success");
   const navigate = useNavigate();
 
   const registerformdata = useFormik({
@@ -41,26 +41,26 @@ export default function Register() {
     onSubmit: (userdata) => {
       console.log(userdata);
       axios
-        .post("https://fitness-logger.onrender.com/register", userdata)
+        .post("http://localhost:4500/create-user", userdata)
         .then((response) => {
-          setType("success")
+          setType("success");
           setRegister(true);
-          setData(response.data)
-         
+          setData(response.data);
+
           setTimeout(() => {
             navigate("/login");
-          }, 4000); 
+          }, 4000);
         })
         .catch((err) => {
-          setType("warning")
+          setType("warning");
           setRegister(true);
-        setData(`${err.response.data} login link sended to your mail`)});
-   
+          setData(`${err.response.data} login link sended to your mail`);
+        });
     },
   });
 
   const handleClose = (event, reason) => {
-    if (reason === 'clickaway') {
+    if (reason === "clickaway") {
       return;
     }
 
@@ -165,60 +165,81 @@ export default function Register() {
         </Box>
       </Container>
 
-     {registerformdata.errors.firstname ?<Alert
-        sx={{
-          float: "right",
-          position: "absolute",
-          top: "0px",
-          right: "0px",
-        }}
-        severity="warning"
-      >
-        {registerformdata.errors.firstname}
-      </Alert>:<></>}
+      {registerformdata.errors.firstname ? (
+        <Alert
+          sx={{
+            float: "right",
+            position: "absolute",
+            top: "0px",
+            right: "0px",
+          }}
+          severity="warning"
+        >
+          {registerformdata.errors.firstname}
+        </Alert>
+      ) : (
+        <></>
+      )}
 
-    {  registerformdata.errors.lastname?<Alert
-        sx={{
-          float: "right",
-          position: "absolute",
-          top: "50px",
-          right: "0px",
-        }}
-        severity="warning"
-      >
-        {registerformdata.errors.lastname}
-      </Alert>:<></>}
+      {registerformdata.errors.lastname ? (
+        <Alert
+          sx={{
+            float: "right",
+            position: "absolute",
+            top: "50px",
+            right: "0px",
+          }}
+          severity="warning"
+        >
+          {registerformdata.errors.lastname}
+        </Alert>
+      ) : (
+        <></>
+      )}
 
-      {registerformdata.errors.email?<Alert
-        sx={{
-          float: "right",
-          position: "absolute",
-          top: "100px",
-          right: "0px",
-        }}
-        severity="warning"
-      >
-        {registerformdata.errors.email}
-      </Alert>:<></>}
+      {registerformdata.errors.email ? (
+        <Alert
+          sx={{
+            float: "right",
+            position: "absolute",
+            top: "100px",
+            right: "0px",
+          }}
+          severity="warning"
+        >
+          {registerformdata.errors.email}
+        </Alert>
+      ) : (
+        <></>
+      )}
 
-   { registerformdata.errors.password?  <Alert
-        sx={{
-          float: "right",
-          position: "absolute",
-          top: "150px",
-          right: "0px",
-        }}
-        severity="warning"
-      >
-        {registerformdata.errors.password}
-      </Alert>:<></>}
+      {registerformdata.errors.password ? (
+        <Alert
+          sx={{
+            float: "right",
+            position: "absolute",
+            top: "150px",
+            right: "0px",
+          }}
+          severity="warning"
+        >
+          {registerformdata.errors.password}
+        </Alert>
+      ) : (
+        <></>
+      )}
 
-      <Snackbar open={register} autoHideDuration={2000}  anchorOrigin={{ vertical:"top", horizontal:"right" }}  onClose={handleClose}>
-        <Alert severity={type} sx={{ width: "100%" }} >
+      <Snackbar
+        open={register}
+        autoHideDuration={2000}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        onClose={handleClose}
+      >
+        <Alert severity={type} sx={{ width: "100%" }}>
           {data}
         </Alert>
       </Snackbar>
-      
+
       <Outlet />
     </Box>
   );

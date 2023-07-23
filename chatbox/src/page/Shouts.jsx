@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import ShoutFights from "../component/ShoutFights";
+import ShoutFights from "../component/chatbox/ShoutFights";
 import ShoutList from "../component/ShoutLists";
 
 function Shouts() {

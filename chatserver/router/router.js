@@ -9,7 +9,7 @@ const {
   auth,
   verifyUser,
 } = require("../controller/userAction");
-const {} = require("../controller/shoutAction");
+const {shouts} = require("../controller/shoutAction");
 
 route.get("/", (req, res) => {
   res.end("hello there");

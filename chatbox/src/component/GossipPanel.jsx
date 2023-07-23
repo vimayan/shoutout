@@ -102,11 +102,9 @@ function ResponsiveDrawer(props) {
         <Typography display={"flex"} textAlign={"start"}>
           Vimal vimal@gmail.com
         </Typography>
-        <Link to="/user/setting"
-         className="text-decoration-none text-light" >
-        <SettingsIcon sx={{ alignSelf: "bottom" }} />
+        <Link to="/user/setting" className="text-decoration-none text-light">
+          <SettingsIcon sx={{ alignSelf: "bottom" }} />
         </Link>
-        
       </Toolbar>
       <Divider />
       <List>

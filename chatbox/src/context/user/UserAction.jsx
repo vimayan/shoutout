@@ -1,6 +1,6 @@
 import React, { useReducer } from "react";
 import UserReducer from "./UserReducer";
-import UserContext from "./UserReducer";
+import UserContext from "./UserContext";
 import axios from "axios";
 import io from "socket.io-client";
 
@@ -44,7 +44,7 @@ function UserAction(props) {
     };
     try {
       const res = await axios.get(
-        `http://localhost:5000/${username}/getuser`,
+        `http://localhost:4500/${username}/getuser`,
         config
       );
 
@@ -110,7 +110,8 @@ function UserAction(props) {
   //   dispatch({ type: "CREATE_PEER", payload: peerConnection });
   // };
 
-  const createPeerConnection = async (peerId) => {   //peerId is a user_id of contacts
+  const createPeerConnection = async (peerId) => {
+    //peerId is a user_id of contacts
     const peerConnection = new RTCPeerConnection();
 
     peerConnection
@@ -155,8 +156,6 @@ function UserAction(props) {
   //     console.error("Error creating answer:", error);
   //   }
   // };
-
-
 
   const handleOffer = async (offer, peerId) => {
     try {

@@ -1,3 +1,4 @@
+const { file } = require("googleapis/build/src/apis/file");
 const mongoose = require("mongoose");
 
 const userSchema = mongoose.Schema({
@@ -54,7 +55,7 @@ const shoutSchema = mongoose.Schema({
         unique: true,
       },
       text: { type: String, required: true },
-      file: { type: URL },
+      file: { type: String, default: null },
     },
   ],
 

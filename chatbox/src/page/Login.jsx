@@ -12,12 +12,11 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Link, Outlet } from "react-router-dom";
-// import axios from "axios";
 import * as yup from "yup";
 import { useFormik } from "formik";
 import { useNavigate } from "react-router-dom";
 import { Alert, Snackbar } from "@mui/material";
-import UserContext from "../context/user/userContext";
+import UserContext from "../context/user/UserContext";
 
 function Copyright(props) {
   return (
@@ -44,11 +43,10 @@ export default function Login() {
   const [checked, setChecked] = useState(true);
 
   const usercontext = useContext(UserContext);
-  const { login, error, user } = usercontext;
+  const { login, error, user, socketConnection } = usercontext;
 
   const [enter, setEnter] = useState(false);
-  const [data,setData] = useState('')
-  
+  const [data, setData] = useState("");
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -60,31 +58,28 @@ export default function Login() {
     const token = localStorage.getItem("token");
     const username = localStorage.getItem("username");
 
-    if (token) navigate(`/${username}`);
+    if (token) {
+      socketConnection()
+      navigate(`/${username}`);
+    } 
+    else if (error.data) {
+      if (error.data.details) {
+        setData(error.data.details[0].message);
 
-    if (error.data) {
-     
-      if(error.data.details)
-     {
-      setData(error.data.details[0].message);
-  
-      setEnter(true)
+        setEnter(true);
+      } else {
+        setData(error.data);
 
+        setEnter(true);
+      }
     }
-     else{setData(error.data);
-   
-      setEnter(true);
-    }
-  }
-
-  
   }, [login, user]);
 
   const handleChange = (event) => {
     setChecked(event.target.checked);
   };
   const handleClose = (event, reason) => {
-    if (reason === 'clickaway') {
+    if (reason === "clickaway") {
       return;
     }
 
@@ -241,12 +236,16 @@ export default function Login() {
       ) : (
         <></>
       )}
- <Snackbar open={enter} autoHideDuration={2000}  anchorOrigin={{ vertical:"top", horizontal:"right" }}  onClose={handleClose}>
-        <Alert severity="warning" sx={{ width: "100%" }} >
+      <Snackbar
+        open={enter}
+        autoHideDuration={2000}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        onClose={handleClose}
+      >
+        <Alert severity="warning" sx={{ width: "100%" }}>
           {data}
         </Alert>
       </Snackbar>
-
 
       <Outlet />
     </>

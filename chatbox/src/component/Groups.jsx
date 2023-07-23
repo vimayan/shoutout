@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useContext } from "react";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
@@ -6,18 +6,26 @@ import ListItemAvatar from "@mui/material/ListItemAvatar";
 import Avatar from "@mui/material/Avatar";
 import ImageIcon from "@mui/icons-material/Image";
 import { Divider } from "@mui/material";
+import GroupContext from "../context/groups/GroupContext";
 
 export default function Groups(props) {
+  const groupContext = useContext(GroupContext);
+
+  const { groups, chatbox, setChat } = groupContext;
+
   return (
     <List sx={{ width: "100%", bgcolor: "background.paper" }}>
-      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((value, index) => (
+      {groups?.map((value, index) => (
         <>
           <ListItem
             key={index}
-            onClick={props.onItemClick}
+            onClick={() => {
+              props.onItemClick();
+              setChat(value.group_id);
+            }}
             sx={{
-                alignItems:"flex-start",
-                cursor:"context-menu"
+              alignItems: "flex-start",
+              cursor: "pointer",
             }}
           >
             <ListItemAvatar>
@@ -25,7 +33,16 @@ export default function Groups(props) {
                 <ImageIcon />
               </Avatar>
             </ListItemAvatar>
-            <ListItemText primary="Photos" secondary="Jan 9, 2014" />
+            <ListItemText
+              primary={`${value.name}`}
+              secondary={
+                (chatbox[value.user_id] &&
+                  (chatbox[value.user_id].slice(-1)[0].html
+                    ? "audio/video"
+                    : chatbox[value.user_id].slice(-1)[0].text)) ||
+                ""
+              }
+            />
           </ListItem>
           <Divider variant="inset" component="li" />
         </>

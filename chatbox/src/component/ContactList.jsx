@@ -32,7 +32,7 @@ export default function ContactList(props) {
               secondary={
                 <React.Fragment>
                   {(chatbox[value.user_id] &&
-                    chatbox[value.user_id].slice(-1)[0].text) ||
+                    (chatbox[value.user_id].slice(-1)[0].html?'audio/video':chatbox[value.user_id].slice(-1)[0].text)) ||
                     ""}
                 </React.Fragment>
               }

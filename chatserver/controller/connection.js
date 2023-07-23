@@ -6,6 +6,7 @@ const socket = getSocket();
     socket.to(user_id).emit("offer", offer, socket.id, user_id);
 
     callback("offer shared");
+    console.log('offer shared ',user_id);
   });
 })();
 (function () {
@@ -13,6 +14,7 @@ const socket = getSocket();
     socket.to(socket_id).emit("answer", answer, user_id);
 
     callback("answer sended");
+    console.log('offer shared ',socket_id);
   });
 })();
 
