@@ -30,6 +30,9 @@ import { Avatar } from "@mui/material";
 import { deepOrange } from "@mui/material/colors";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { Link, Outlet } from "react-router-dom";
+import UserContext from "../context/user/UserContext";
+import GossipContext from "../context/gossipers/GossipContext";
+import { useNavigate } from "react-router-dom";
 
 const drawerWidth = 310;
 
@@ -85,12 +88,80 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 function ResponsiveDrawer(props) {
+  const navigate = useNavigate();
+  
+  const usercontext = React.useContext(UserContext);
+  const {socket,user,getUser,
+    handleOffer,
+    handleRemoteAnswer,
+    createPeerConnection,
+    peerConnection, } = usercontext;
+  const gossipContext = React.useContext(GossipContext);
+
+  const {people,store_connects,store_reconnects,setChat,recieve_message} = gossipContext;
+
+
   const { window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
+  React.useEffect(() => {
+    const username = localStorage.getItem("username");
+    const token = localStorage.getItem("token");
+   ( token && username)?getUser():navigate(`/${username}`);
+   
+  }, []);
+  
+
+  React.useEffect(() => {
+    if(people?.length!=0){setChat(people[0].userid)}
+  }, [socket]);
+
+  React.useEffect(()=>{
+    if(socket){
+      socket.on('restore',(contact)=>{
+        store_reconnects(contact)
+      })
+
+      socket.on('store',(contact)=>{
+        store_connects(contact);
+      });
+      socket.on('gossips',(data,sender_id,socket_id)=>{
+        console.log('message',data);
+        recieve_message(data,sender_id)
+      })
+    }
+   
+  },[socket])
+
+
+
+ 
+
+//webRtc
+  // React.useEffect(()=>{
+  //   if (contacts) (contacts).forEach((element) => {
+  //       createPeerConnection(element._id);
+  //     });
+  //    console.log(peerConnection)
+  // },[socket])
+
+  // React.useEffect(() => {
+  //   socket.on("offer", (offer, user_id, socket_id) => {
+  //     console.log("offer recieved", user_id);
+  //     handleOffer({ offer: offer, peerId: user_id, socket_id: socket_id });
+  //   });
+  // }, [user]);
+
+  // React.useEffect(() => {
+  //   socket.on("answer", (answer, user_id) => {
+  //     console.log("answer", user_id);
+  //     handleRemoteAnswer(answer, user_id);
+  //   });
+  // }, [user]);
+
 
   const drawer = (
     <div>
@@ -100,9 +171,9 @@ function ResponsiveDrawer(props) {
           sx={{ bgcolor: deepOrange[500], width: 56, height: 56, my: 2 }}
         />{" "}
         <Typography display={"flex"} textAlign={"start"}>
-          Vimal vimal@gmail.com
+         {user.firstname} {user.email}
         </Typography>
-        <Link to="/user/setting" className="text-decoration-none text-light">
+        <Link to={`/${user.firstname}/setting`} className="text-decoration-none text-light">
           <SettingsIcon sx={{ alignSelf: "bottom" }} />
         </Link>
       </Toolbar>
@@ -115,7 +186,7 @@ function ResponsiveDrawer(props) {
         ].map((Item, index) => (
           <ListItem key={Item.text} disablePadding>
             <Link
-              to={`/user/${Item.path}`}
+              to={`/${user.firstname}/${Item.path}`}
               className="text-decoration-none text-light"
             >
               <ListItemButton>
@@ -136,7 +207,7 @@ function ResponsiveDrawer(props) {
         ].map((Items, index) => (
           <ListItem key={Items.text} disablePadding>
             <Link
-              to={`/user/${Items.path}`}
+              to={`/${user['firstname']}/${Items.path}`}
               className="text-decoration-none text-light"
             >
               <ListItemButton>

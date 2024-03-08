@@ -5,9 +5,8 @@ const joi = require("joi");
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const getAccessToken = require("./googleAuth2");
-const { getIO, getSocket } = require("../socket");
-
-const socket = getSocket();
+// const { getIO, getSocket } = require("../socket");
+// const {AnswerRtc,offerRtc}= require('./connection')
 
 const registerSchema = joi.object({
   email: joi.string().min(6).required(),
@@ -126,7 +125,7 @@ exports.verifyUser = async (req, res) => {
 
 exports.loginUser = async (req, res) => {
   const email = req.body.email;
-
+  console.log(req.body);
   try {
     const { error } = await loginSchema.validateAsync(req.body);
 
@@ -153,26 +152,55 @@ exports.loginUser = async (req, res) => {
     } else {
       const token = jwt.sign({ _id: user._id }, process.env.SECRET_KEY);
 
+      // getting socket
+      // const socket = await getSocket();
+      // console.log(socket.id);
+
+      // // creating room for the user_contacts
+      // socket.join(user._id);
+
+      // const contacts = user.contacts;
+      // console.log(contacts);
+      // for (let i = 0; i < contacts.length; i++) {
+      //   socket.join(contacts[i]._id);
+      // }
+      // //creating room for the groups
+      // const groups = user.groups;
+      // for (let i = 0; i < groups.length; i++) {
+      //   socket.join(groups[i]._id);
+      // }
+
       res.json({
         token: token,
         user: user,
       });
-
-      //creating room for the user_contacts
-      socket.join(user._id);
-
-      const contacts = user.contacts;
-      for (let i = 0; i < contacts.length; i++) {
-        socket.join(contacts[i]._id);
-      }
-      //creating room for the groups
-      const groups = user.groups;
-      for (let i = 0; i < groups.length; i++) {
-        socket.join(groups[i]._id);
-      }
       return;
     }
   } catch (error) {
+    console.log(error);
+    res.status(500).send(error);
+  }
+};
+
+exports.getUser = async (req, res) => {
+  const id = req._id;
+
+  try {
+
+    const user = await UserSchema.findById(id);
+
+    if (!user) {
+      return res.status(400).end("email id not exist please register");
+    }else {
+      const token = jwt.sign({ _id: user._id }, process.env.SECRET_KEY);
+      res.json({
+        token: token,
+        user: user,
+      });
+      return;
+    }
+  } catch (error) {
+    console.log(error);
     res.status(500).send(error);
   }
 };
@@ -285,6 +313,7 @@ exports.resetPassword = async (req, res) => {
 exports.auth = function (req, res, next) {
   // get token from header
   const token = req.headers.token;
+  console.log(token);
   // check if no token
   if (!token) {
     // 401 not outhorised
@@ -309,4 +338,5 @@ exports.auth = function (req, res, next) {
   }
 };
 
-
+// offerRtc();
+// AnswerRtc();

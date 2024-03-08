@@ -1,4 +1,3 @@
-const { file } = require("googleapis/build/src/apis/file");
 const mongoose = require("mongoose");
 
 const userSchema = mongoose.Schema({
@@ -26,8 +25,12 @@ const userSchema = mongoose.Schema({
   },
   contacts: [
     {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "user",
+      name: { type: String, required: true, default: "" },
+      user_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "user",
+        required: true,
+      },
     },
   ],
   groups: [
@@ -84,8 +87,21 @@ const groupSchema = mongoose.Schema({
   // ],
 });
 
+const tokenSchema = mongoose.Schema({
+  userid: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "user",
+    required: true,
+    unique: true,
+  },
+
+  token: { type: String, required: true },
+
+  createdAt: { type: Date, default: Date.now(), expires: 36000 },
+});
 module.exports = {
   UserSchema: mongoose.model("user", userSchema),
   ShoutSchema: mongoose.model("shouts", shoutSchema),
   GroupSchema: mongoose.model("groups", groupSchema),
+  TokenSchema: mongoose.model("tokens", tokenSchema),
 };

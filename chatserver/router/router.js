@@ -3,6 +3,7 @@ const { gosipers, groupGosips } = require("../controller/gossipAction");
 const {
   createUser,
   loginUser,
+  getUser,
   requestPassword,
   enterPassword,
   resetPassword,
@@ -21,6 +22,7 @@ route.post("/request-password", requestPassword);
 route.get("/reset-password/:id/:token", enterPassword);
 route.post("/reset-password/:id/:token", resetPassword);
 
+route.get("/:user/getuser",auth, getUser);
 route.get("/:user/gosipers", auth, gosipers);
 route.get("/:user/group_gosips", auth, groupGosips);
 

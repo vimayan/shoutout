@@ -5,11 +5,16 @@ import SendIcon from "@mui/icons-material/Send";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ClearIcon from "@mui/icons-material/Clear";
 import GossipContext from "../context/gossipers/GossipContext";
+import UserContext from "../context/user/UserContext";
 // import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 function Gossips({ onCloseClick }) {
+
+  const usercontext = useContext(UserContext);
+  const {socket,user } = usercontext;
+
   const gossipContext = useContext(GossipContext);
 
-  const { handleAttachment, removeFile, send, message, files,chatId } = gossipContext;
+  const { handleAttachment, removeFile, send, message,chatbox, files,chatId } = gossipContext;
   const [recording, setRecording] = useState(false);
   const audioRef = useRef(null);
   const [text, setText] = useState("");
@@ -74,12 +79,13 @@ function Gossips({ onCloseClick }) {
         </button>
         <div className="col-12 py-5 messages">
           <div className="container-fluid py-5 py-md-auto" id="chat_body">
-            {message &&
-              message.map((e, i) =>
-                e.user === "user"?.toLowerCase() ? (
+            {chatbox[chatId] &&
+              chatbox[chatId].map((e, i) =>
+                e.user === user?._id ? (
                   <div key={i} className="row mb-4 text-start">
                     <div className="col-8">
                       <div className="">
+                          {e.html}
                         <p>{e.text}</p>
                         {/* <time>{e.user}</time> */}
                       </div>
@@ -89,7 +95,24 @@ function Gossips({ onCloseClick }) {
                   <div key={i} className="row mb-4">
                     <div className="col-8 ms-auto text-end">
                       <div className="">
-                        {e.html}
+                     
+                        {e.html?.type=='img'?<img
+                            src={e.html.props.src}
+                            alt={e.html.props.alt}
+                            height={e.html.props.height}
+                          />:<></>}
+                            {e.html?.type=='video'?
+                            <video>
+                              <source controls src={e.html.props.src}
+                            alt={e.html.props.alt}
+                            height={e.html.props.height}/>
+                            </video>
+                           :<></>}
+                           {e.html?.type=='audio'?<img
+                            src={e.html.props.src}
+                            alt={e.html.props.alt}
+                            height={e.html.props.height}
+                          />:<></>}
                         <p>{e.text}</p>
                       </div>
                     </div>
@@ -103,16 +126,25 @@ function Gossips({ onCloseClick }) {
             {files.map((file, index) => (
               <div key={index} className="">
                 <div className="d-flex">
-                  <img
-                    src={URL.createObjectURL(file)}
-                    alt={file.name}
+                  {file.type.split("/")[0]=='image'?<><img
+                    src={file.data}
+                    alt={"img"}
                     height={"50px"}
                     className="thumbnail"
                   />
                   <ClearIcon
                     className="remove-icon"
                     onClick={() => removeFile(index)}
-                  />
+                  /></>:<></>}
+                   {file.type.split("/")[0]=='video'?<><video height={"50px"}  className="thumbnail">
+                  <source src={file.data} type={file.type} />
+                  Your browser does not support the video tag.
+                </video>
+
+                  <ClearIcon
+                    className="remove-icon"
+                    onClick={() => removeFile(index)}
+                  /></>:<></>}
                 </div>
               </div>
             ))}

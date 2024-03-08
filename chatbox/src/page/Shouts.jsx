@@ -1,13 +1,32 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import ShoutFights from "../component/chatbox/ShoutFights";
 import ShoutList from "../component/ShoutLists";
+import UserContext from "../context/user/UserContext";
 
 function Shouts() {
   const [isShoutFightOpen, setIsShoutFightOpen] = useState(false);
 
+  const usercontext = useContext(UserContext);
+  const { handleOffer,handleRemoteAnswer, socket } = usercontext;
+
   const handleListClick = () => {
     setIsShoutFightOpen(!isShoutFightOpen);
   };
+
+  // useEffect(() => {
+  //   socket.on("offer", (offer, socket_id, user_id) => {
+  //     handleOffer({ offer, user_id, socket_id });
+  //   });
+  //   socket.on("answer", (answer, user_id)=>{
+  //     handleRemoteAnswer(answer, user_id)
+  //   });
+
+  //   return () => {
+  //     // Clean up the event listeners when the component unmounts
+  //     socket.off("offer");
+  //     socket.off("answer");
+  //   };
+  // }, []);
 
   return (
     <div className="container-fluid" id="shouts">

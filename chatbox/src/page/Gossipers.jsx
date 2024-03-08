@@ -1,25 +1,36 @@
 import React, { useContext, useEffect, useState } from "react";
 import ContactList from "../component/ContactList";
-import GossipContext from "../context/gossipers/GossipContext";
 import Gossips from "../component/Gossips";
 
 function Gossipers() {
-  const gossipContext = useContext(GossipContext);
 
-  const { setChat,contacts } = gossipContext;
   const [isShoutFightOpen, setIsShoutFightOpen] = useState(false);
 
   const handleListClick = () => {
     setIsShoutFightOpen(!isShoutFightOpen);
   };
-  useEffect(() => {
-    setChat(contacts[0].user_id)
-  },[]);
+
+
+
+
+
+  // useEffect(() => {
+  //   const token = localStorage.getItem("token");
+  //   if (token && contacts) {
+  //     contacts.forEach(async (element) => {
+  //       const peerConnection = await createPeerConnection(element._id);
+  //       // console.log(peerConnection); // Check if the peerConnection object is available
+  //     });
+  //   }
+  // }, [socket]);
+
+ 
+
   return (
     <div className="container-fluid" id="shouts">
       <div className="row position-relative">
         <div className="d-none d-md-block col-md-7 col-xl-5 mt-auto message">
-          <Gossips/>
+          <Gossips />
         </div>
         <div
           className={`col col-md-5 col-xl-4 pt-5 list ${

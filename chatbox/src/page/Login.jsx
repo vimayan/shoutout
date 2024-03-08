@@ -43,7 +43,7 @@ export default function Login() {
   const [checked, setChecked] = useState(true);
 
   const usercontext = useContext(UserContext);
-  const { login, error, user, socketConnection } = usercontext;
+  const { login,getUser, error, user, socket, createPeerConnection,handleOffer } = usercontext;
 
   const [enter, setEnter] = useState(false);
   const [data, setData] = useState("");
@@ -59,10 +59,23 @@ export default function Login() {
     const username = localStorage.getItem("username");
 
     if (token) {
-      socketConnection()
+      console.log("from Login", user);
+      // socket?.on("checking", (offer, user_id, socket_id) => {
+      //   console.log("offer recieved", offer, user_id, socket_id);
+      // });
+      // socket.broadcast.to(user_id).emit("offer", offer, user_id, socket.id);
+      // callback("offer shared");
+      // console.log("offer shared ", user_id);
+      // user.contacts.forEach((element) => {
+      //   createPeerConnection(element.userid);
+      // });
+      // socket.on("offer", (offer, user_id, socket_id) => {
+      //   console.log("offer recieved", user_id);
+      //   handleOffer({ offer: offer, peerId: user_id, socket_id: socket_id });
+      // });
+
       navigate(`/${username}`);
-    } 
-    else if (error.data) {
+    } else if (error?.data) {
       if (error.data.details) {
         setData(error.data.details[0].message);
 
@@ -74,6 +87,14 @@ export default function Login() {
       }
     }
   }, [login, user]);
+
+  // useEffect(()=>{
+  //   // socketConnection()
+  //   const token = localStorage.getItem("token");
+  //   if (token) (user.contacts).forEach((element) => {
+  //       createPeerConnection(element._id);
+  //     });
+  // },[socket])
 
   const handleChange = (event) => {
     setChecked(event.target.checked);
@@ -175,6 +196,7 @@ export default function Login() {
                   id="password"
                   value={loginformdata.values.password}
                   onChange={loginformdata.handleChange}
+                  autoComplete="off"
                 />
                 <FormControlLabel
                   control={
@@ -216,12 +238,12 @@ export default function Login() {
             right: "0px",
           }}
         >
-          {loginformdata.errors.email}
+          {loginformdata?.errors.email}
         </Alert>
       ) : (
         <></>
       )}
-      {loginformdata.errors.password ? (
+      {loginformdata?.errors.password ? (
         <Alert
           severity="warning"
           sx={{
@@ -231,7 +253,7 @@ export default function Login() {
             right: "0px",
           }}
         >
-          {loginformdata.errors.password}
+          {loginformdata?.errors.password}
         </Alert>
       ) : (
         <></>

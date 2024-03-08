@@ -7,7 +7,7 @@ const morgan = require("morgan");
 const route = require("./router/router");
 const mongoose = require("mongoose");
 
-initialize(server);
+
 
 //cors origin issue
 app.use(cors({ origin: "*" }));
@@ -38,9 +38,10 @@ mongoose
     process.exit();
   });
 
+  initialize(server);
+
 const PORT = process.env.PORT || 1500;
 
 server.listen(PORT, () => {
   console.log(`server listening on PORT ${PORT}`);
 });
-

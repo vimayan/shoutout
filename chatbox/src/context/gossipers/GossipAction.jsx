@@ -1,90 +1,27 @@
-import React, { useReducer } from "react";
-import axios from "axios";
+import React, { useContext, useReducer } from "react";
 import GossipReducer from "./GossipReducer";
 import GossipContext from "./GossipContext";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
+import UserContext from "../user/UserContext";
 
 function GossipAction(props) {
-  const chat = [
-    {
-      name: "contact1",
-      user_id: 1,
-    },
-    {
-      name: "contact2",
-      user_id: 2,
-    },
-    {
-      name: "contact3",
-      user_id: 3,
-    },
-    {
-      name: "contact4",
-      user_id: 4,
-    },
-    {
-      name: "contact5",
-      user_id: 5,
-    },
-    {
-      name: "contact6",
-      user_id: 6,
-    },
-    {
-      name: "contact7",
-      user_id: 7,
-    },
-    {
-      name: "contact8",
-      user_id: 8,
-    },
-  ];
+  const usercontext = useContext(UserContext);
 
-  // const chats = {
-  //   1: [
-  //     { user: "user", text: "hello here i am 1" },
-  //     { user: "contact1", text: "hi superb" },
-  //     { user: "user", text: "whats new" },
-  //     { user: "contact1", text: "nothing special" },
-  //     { user: "user", text: "tell me something" },
-  //   ],
-
-  //   2: [
-  //     { user: "user", text: "hello here i am 2" },
-  //     { user: "contact2", text: "hi superb" },
-  //     { user: "user", text: "whats new" },
-  //     { user: "contact2", text: "nothing special" },
-  //     { user: "user", text: "tell me something" },
-  //   ],
-
-  //   3: [
-  //     { user: "user", text: "hello here i am 3" },
-  //     { user: "contact3", text: "hi superb" },
-  //     { user: "user", text: "whats new" },
-  //     { user: "contact3", text: "nothing special" },
-  //     { user: "user", text: "tell me something" },
-  //   ],
-
-  //   4: [
-  //     { user: "user", text: "hello here i am 4" },
-  //     { user: "contact4", text: "hi superb" },
-  //     { user: "user", text: "whats new" },
-  //     { user: "contact4", text: "nothing special" },
-  //     { user: "user", text: "tell me something" },
-  //   ],
-  // };
+  const { socket, user } = usercontext;
 
   const Gossip = {
-    contacts: [...chat],
+    people: [],
     chatbox: {},
     files: [],
     message: [],
     chatId: null,
     time: new Date(),
     loading: false,
+    socketID: null,
   };
 
   const [state, dispatch] = useReducer(GossipReducer, Gossip);
+ 
 
   const setLoading = () => {
     dispatch({ type: "SET_LOADING" });
@@ -93,15 +30,36 @@ function GossipAction(props) {
   const setTime = (time) => {
     dispatch({ type: "SET_TIME", payload: time });
   };
+
   const setChat = (user_id) => {
     const message = state.chatbox[user_id] ? state.chatbox[user_id] : "";
     dispatch({ type: "SELECT_MESSAGE", payload: message });
     dispatch({ type: "SELECT_CHAT_ID", payload: user_id });
   };
 
+  // const handleAttachment = (e) => {
+  //   const selectedFiles = Array.from(e.target.files);
+    
+  //   dispatch({ type: "ADD_FILES", payload: selectedFiles });
+  // };
+
   const handleAttachment = (e) => {
     const selectedFiles = Array.from(e.target.files);
-    dispatch({ type: "ADD_FILES", payload: selectedFiles });
+    console.log(selectedFiles);
+    selectedFiles.map((file)=>{
+
+      var reader = new FileReader();
+        
+      reader.onload = (event) => {
+        var type = file.type
+        var fileData = event.target.result;
+        console.log(type);
+        dispatch({ type: "ADD_FILES", payload: {data:fileData,type:type} });
+      };
+  
+      reader.readAsDataURL(file);
+    })
+    
   };
 
   const removeFile = (index) => {
@@ -112,47 +70,66 @@ function GossipAction(props) {
   const send = ({ chat_id, text = "", audio = null }) => {
     // console.log(state.files);
     // console.log(text);
+    
     if (state.files.length !== 0 || text.length !== 0) {
-      const fileMessages = state.files.map((file) => {
-        const fileType = file.type.split("/")[0];
-        if (fileType === "image") {
-          return {
-            user: "sender",
-            html: (
-              <img
-                src={URL.createObjectURL(file)}
-                height={"100px"}
-                alt={file.name}
-              />
-            ),
-            attachment: true,
-          };
-        } else if (fileType === "video") {
-          return {
-            user: "sender",
-            html: <video src={URL.createObjectURL(file)} />,
-            attachment: true,
-          };
-        } else if (fileType === "audio") {
-          return {
-            user: "sender",
-            html: <audio src={URL.createObjectURL(file)} controls />,
-            attachment: true,
-          };
-        } else if (fileType === "application" && file.name.endsWith(".pdf")) {
-          return {
-            user: "sender",
-            html: (
-              <>
-                <div class="pdf-thumbnail">
+        const fileMessages = state.files.map((file) => {
+          const fileType = file.type.split("/")[0];
+
+          if (fileType === "image") {
+            return {
+              user: user._id,
+              html: (
+                <img
+                  src={file.data}
+                  height={"100px"}
+                  alt="img"
+                />
+              ),
+              attachment: true,
+            };
+          } else if (fileType === "video") {
+            return {
+              user: user._id,
+              html:<video>
+                <source src={file.data} controls/>
+              </video>,
+              attachment: true,
+            };
+          } else if (fileType === "audio") {
+            return {
+              user: user._id,
+              html: <audio src={file.data} controls />,
+              attachment: true,
+            };
+          } else if (fileType === "application" && file.name.endsWith(".pdf")) {
+            return {
+              user: user._id,
+              html: (
+                <>
+                  <div class="pdf-thumbnail">
+                    <a
+                      href={file.data}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <PictureAsPdfIcon />
+                    </a>
+                  </div>
                   <a
-                    href={URL.createObjectURL(file)}
+                    href={file.data}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <PictureAsPdfIcon />
+                    {file.name}
                   </a>
-                </div>
+                </>
+              ),
+              attachment: true,
+            };
+          } else {
+            return {
+              user: user._id,
+              html: (
                 <a
                   href={URL.createObjectURL(file)}
                   target="_blank"
@@ -160,44 +137,25 @@ function GossipAction(props) {
                 >
                   {file.name}
                 </a>
-              </>
-            ),
-            attachment: true,
-          };
-        } else {
-          return {
-            user: "sender",
-            html: (
-              <a
-                href={URL.createObjectURL(file)}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {file.name}
-              </a>
-            ),
-            attachment: true,
-          };
-        }
-      });
-      const messages = [...fileMessages, { text: text }];
-
+              ),
+              attachment: true,
+            };
+          }
+        });
+      const messages = [...fileMessages, {user: user._id,text: text }];
+      sendSocketMSg(messages,chat_id);
       dispatch({ type: "SEND_MESSAGE", payload: messages });
       // Clear files
       dispatch({ type: "CLEAR_FILES" });
+
       //update chatbox
-      console.log(chat_id);
-      const chatBox = { ...state.chatbox };
-      const updatedChat = {};
-      updatedChat[chat_id] = chatBox[chat_id]
-        ? [...chatBox[chat_id], ...messages]
-        : [...messages];
-      console.log(updatedChat);
-      dispatch({ type: "UPDATE_MESSAGE", payload: updatedChat });
+      dispatch({ type: "UPDATE_MESSAGE", payload: {message:[...messages],id:chat_id} });
+
     } else if (audio) {
       console.log(audio);
+
       const messages = {
-        user: "sender",
+        user: user._id,
         html: (
           <audio src={URL.createObjectURL(audio)} controls className="col-12" />
         ),
@@ -206,20 +164,68 @@ function GossipAction(props) {
       console.log(messages);
 
       dispatch({ type: "SEND_MESSAGE", payload: [messages] });
-
+      sendSocketMSg([messages],chat_id);
+      
       //update chatbox
-      const chatBox = { ...state.chatbox };
-      const updatedChat = {};
-      updatedChat[chat_id] = [...chatBox[chat_id], { ...messages }];
-      console.log(updatedChat);
-      dispatch({ type: "UPDATE_MESSAGE", payload: updatedChat });
+      dispatch({ type: "UPDATE_MESSAGE", payload: {message:[...messages],id:chat_id} });
+   
+
+    
     }
   };
+
+  const store_connects = async (people_details) => {
+    try {
+      dispatch({
+        type: "STORE_PEOPLE",
+        payload: {
+          name: people_details["name"],
+          userid: people_details["userid"],
+          socket_id: people_details.socket_id,
+        }
+      });
+
+      const socket_id = people_details.socket_id;
+      const load_contact = {
+        name: user["firstname"],
+        userid: user["_id"],
+        socket_id: socket.id,
+      };
+      socket.emit("reconnect", socket_id, load_contact);
+    } catch (error) {
+      console.error("An error occurred in store_connects:", error);
+    }
+  };
+  const store_reconnects = async (people_details) => {
+    try {
+      dispatch({
+        type: "RESTORE_PEOPLE",
+        payload: {
+          name: people_details["name"],
+          userid: people_details["userid"],
+          socket_id: people_details.socket_id,
+        },
+      });
+    } catch (error) {
+      console.error("An error occurred in store_connects:", error);
+    }
+  };
+  const sendSocketMSg = (message, chat_id) => {
+    socket.emit("message", message, chat_id,user._id);
+  };
+
+  const recieve_message = ( message,chat_id )=>{
+    const messages = [...message];
+    console.log(messages);
+    dispatch({ type: "SEND_MESSAGE", payload: messages });
+
+    dispatch({ type: "UPDATE_MESSAGE", payload: {message:[...messages],id:chat_id} });
+  }
 
   return (
     <GossipContext.Provider
       value={{
-        contacts: state.contacts,
+        people: state.people,
         chatbox: state.chatbox,
         message: state.message,
         files: state.files,
@@ -230,6 +236,9 @@ function GossipAction(props) {
         removeFile,
         send,
         setChat,
+        store_connects,
+        store_reconnects,
+        recieve_message
       }}
     >
       {props.children}
