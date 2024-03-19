@@ -8,15 +8,18 @@ import "bootstrap/dist/js/bootstrap";
 import GossipAction from "./context/gossipers/GossipAction";
 import GroupAction from "./context/groups/GroupAction";
 import UserAction from "./context/user/UserAction";
+import ShoutAction from "./context/shouts/ShoutAction";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <UserAction>
-    <GossipAction>
-      <GroupAction>
-        <App />
-      </GroupAction>
-    </GossipAction>
+    <ShoutAction>
+      <GossipAction>
+        <GroupAction>
+          <App />
+        </GroupAction>
+      </GossipAction>
+    </ShoutAction>
   </UserAction>
 );
 

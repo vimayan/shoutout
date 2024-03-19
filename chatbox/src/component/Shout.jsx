@@ -11,36 +11,39 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import ShareIcon from "@mui/icons-material/Share";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 
-export default function Shout() {
+export default function Shout(props) {
+
   return (
-    <Card>
+    <Card sx={{width:'inherit'}}>
       <CardHeader
         avatar={
           <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
-            R
+            {props.shouter['username'].toUpperCase()}
           </Avatar>
         }
         action={
-          <IconButton aria-label="settings">
+          <IconButton aria-label="settings" onClick = {(event)=>{
+            event.stopPropagation();}}>
             <MoreVertIcon />
           </IconButton>
         }
-        title="Shrimp and Chorizo Paella"
-        subheader="September 14, 2016"
+        title={props.shouter['username']}
+        subheader={new Date(props.createdAt).toString().split('G')[0]}
       />
 
       <CardContent>
         <Typography variant="body2" color="text.secondary">
-          This impressive paella is a perfect party dish and a fun meal to cook
-          together with your guests. Add 1 cup of frozen peas along with the
-          mussels, if you like.
+         {props.shout}
         </Typography>
       </CardContent>
       <CardActions disableSpacing>
-        <IconButton aria-label="add to favorites">
-          <FavoriteIcon />
+        <IconButton aria-label="add to favorites"  onClick = {(event)=>{
+          event.stopPropagation();
+          props.add_like(props['_id'])}}>
+          <FavoriteIcon/>{props.like>0?props.like:''}
         </IconButton>
-        <IconButton aria-label="share">
+        <IconButton aria-label="share" onClick = {(event)=>{
+          event.stopPropagation();}} >
           <ShareIcon />
         </IconButton>
       </CardActions>

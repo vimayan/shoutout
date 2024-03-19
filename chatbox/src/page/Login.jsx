@@ -59,21 +59,6 @@ export default function Login() {
     const username = localStorage.getItem("username");
 
     if (token) {
-      console.log("from Login", user);
-      // socket?.on("checking", (offer, user_id, socket_id) => {
-      //   console.log("offer recieved", offer, user_id, socket_id);
-      // });
-      // socket.broadcast.to(user_id).emit("offer", offer, user_id, socket.id);
-      // callback("offer shared");
-      // console.log("offer shared ", user_id);
-      // user.contacts.forEach((element) => {
-      //   createPeerConnection(element.userid);
-      // });
-      // socket.on("offer", (offer, user_id, socket_id) => {
-      //   console.log("offer recieved", user_id);
-      //   handleOffer({ offer: offer, peerId: user_id, socket_id: socket_id });
-      // });
-
       navigate(`/${username}`);
     } else if (error?.data) {
       if (error.data.details) {
@@ -88,13 +73,6 @@ export default function Login() {
     }
   }, [login, user]);
 
-  // useEffect(()=>{
-  //   // socketConnection()
-  //   const token = localStorage.getItem("token");
-  //   if (token) (user.contacts).forEach((element) => {
-  //       createPeerConnection(element._id);
-  //     });
-  // },[socket])
 
   const handleChange = (event) => {
     setChecked(event.target.checked);

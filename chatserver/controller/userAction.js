@@ -40,6 +40,10 @@ exports.createUser = async (req, res) => {
       firstname: req.body.firstname,
       lastname: req.body.lastname,
       password: hashpassword,
+      contacts: [],
+      groups: [],
+      pending_request: [],
+      recieved_request: [],
     });
 
     await userAccount.save();
@@ -186,12 +190,11 @@ exports.getUser = async (req, res) => {
   const id = req._id;
 
   try {
-
     const user = await UserSchema.findById(id);
 
     if (!user) {
       return res.status(400).end("email id not exist please register");
-    }else {
+    } else {
       const token = jwt.sign({ _id: user._id }, process.env.SECRET_KEY);
       res.json({
         token: token,
@@ -310,6 +313,139 @@ exports.resetPassword = async (req, res) => {
   }
 };
 
+exports.addFriend = async (req, res) => {
+  const id = req._id;
+  const newContact = { ...req.body };
+
+  try {
+    const user = await UserSchema.findByIdAndUpdate(
+      { _id: id },
+      {
+        $addToSet: { contacts: newContact },
+        $pull: {
+          pending_request: { userid: newContact.userid },
+          recieved_request: { userid: newContact.userid },
+        },
+      },
+      { returnDocument: "after" }
+    );
+    const new_request = {
+      name: user["firstname"],
+      userid: id,
+    };
+    await UserSchema.findByIdAndUpdate(
+      { _id: newContact.userid },
+      {
+        $addToSet: { contacts: new_request },
+        $pull: {
+          pending_request: { userid: id },
+          recieved_request: { userid: id },
+        },
+      }
+    );
+
+    if (!user) {
+      return res.status(400).end("contact ID does exist");
+    } else {
+      res.json({
+        user: user,
+      });
+      return;
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error);
+  }
+};
+
+exports.requestFriend = async (req, res) => {
+  const id = req._id;
+  console.log("requestFriend", req.body, id);
+  const newContact = { name: req.body["name"], userid: req.body["userid"] };
+  try {
+    const user = await UserSchema.findByIdAndUpdate(
+      { _id: id },
+      { $push: { pending_request: newContact } },
+      { returnDocument: "after" }
+    );
+    const new_request = {
+      name: user["firstname"],
+      userid: id,
+    };
+    await UserSchema.findByIdAndUpdate(
+      { _id: newContact.userid },
+      { $push: { recieved_request: new_request } }
+    );
+    if (!user) {
+      return res.status(400).end("contact ID does exist");
+    } else {
+      res.json({
+        user: user,
+      });
+      return;
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error);
+  }
+};
+
+exports.removeRequest = async (req, res) => {
+  const id = req._id;
+  const newContact = { ...req.body };
+  try {
+    await UserSchema.findByIdAndUpdate(
+      { _id: newContact.userid },
+      { $pull: { pending_request: { userid: id } } }
+    );
+    const user = await UserSchema.findByIdAndUpdate(
+      { _id: id },
+      { $pull: { recieved_request: { userid: newContact.userid } } },
+      { returnDocument: "after" }
+    );
+
+    if (!user) {
+      return res.status(400).end("contact ID does exist");
+    } else {
+      res.json({
+        user: user,
+      });
+      return;
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error);
+  }
+};
+
+exports.removePending = async (req, res) => {
+  const id = req._id;
+  const newContact = { ...req.body };
+  try {
+    await UserSchema.findByIdAndUpdate(
+      { _id: newContact.userid },
+      { $pull: { recieved_request: { userid: id } } }
+    );
+    const user = await UserSchema.findByIdAndUpdate(
+      { _id: id },
+      { $pull: { pending_request: { userid: newContact.userid } } },
+      { returnDocument: "after" }
+    );
+
+    if (!user) {
+      return res.status(400).end("contact ID does exist");
+    } else {
+      res.json({
+        user: user,
+      });
+      return;
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error);
+  }
+};
+
 exports.auth = function (req, res, next) {
   // get token from header
   const token = req.headers.token;
@@ -323,6 +459,7 @@ exports.auth = function (req, res, next) {
   try {
     jwt.verify(token, process.env.SECRET_KEY, (err, data) => {
       if (err) {
+        console.log(err);
         return res.status(401).send({
           message: "Unauthorized!",
         });
@@ -337,6 +474,3 @@ exports.auth = function (req, res, next) {
     res.status(401).json({ msg: "Token is not valid" });
   }
 };
-
-// offerRtc();
-// AnswerRtc();

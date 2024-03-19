@@ -5,77 +5,22 @@ import ShoutContext from "./ShoutContext";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 
 function ShoutAction(props) {
-  const chat = [
-    {
-      name: "contact1",
-    },
-    {
-      name: "contact2",
-    },
-    {
-      name: "contact3",
-    },
-    {
-      name: "contact4",
-    },
-    {
-      name: "contact5",
-    },
-    {
-      name: "contact6",
-    },
-    {
-      name: "contact7",
-    },
-    {
-      name: "contact8",
-    },
-  ];
 
-  const chats = {
-    contact1: [
-      { user: "me", text: "hello here i am" },
-      { user: "contact1", text: "hi superb" },
-      { user: "me", text: "whats new" },
-      { user: "contact1", text: "nothing special" },
-      { user: "me", text: "tell me something" },
-    ],
 
-    contact2: [
-      { user: "me", text: "hello here i am" },
-      { user: "contact2", text: "hi superb" },
-      { user: "me", text: "whats new" },
-      { user: "contact2", text: "nothing special" },
-      { user: "me", text: "tell me something" },
-    ],
-
-    contact3: [
-      { user: "me", text: "hello here i am" },
-      { user: "contact2", text: "hi superb" },
-      { user: "me", text: "whats new" },
-      { user: "contact2", text: "nothing special" },
-      { user: "me", text: "tell me something" },
-    ],
-
-    contact4: [
-      { user: "me", text: "hello here i am" },
-      { user: "contact2", text: "hi superb" },
-      { user: "me", text: "whats new" },
-      { user: "contact2", text: "nothing special" },
-      { user: "me", text: "tell me something" },
-    ],
-  };
-
-  const Gossip = {
-    contacts: [...chat],
-    chatbox: {...chats},
+  const shouts = {
+    shouts:[],
+    chatbox: {},
     files: [],
     message: [],
+    shoutId: null,
     time: new Date(),
     loading: false,
   };
 
-  const [state, dispatch] = useReducer(ShoutReducer, Gossip);
+  const [state, dispatch] = useReducer(ShoutReducer, shouts);
+
+  const token = localStorage.getItem("token");
+  const username = localStorage.getItem("username");
 
   const setLoading = () => {
     dispatch({ type: "SET_LOADING" });
@@ -84,119 +29,284 @@ function ShoutAction(props) {
   const setTime = (time) => {
     dispatch({ type: "SET_TIME", payload: time });
   };
-  const setChat = () => {};
-
-  const handleAttachment = (e) => {
-    const selectedFiles = Array.from(e.target.files);
-    dispatch({ type: "ADD_FILES", payload: selectedFiles });
+  const setChat = (user_id) => {
+    const message = state.chatbox[user_id] ? state.chatbox[user_id] : "";
+    dispatch({ type: "SELECT_MESSAGE", payload: message });
+    dispatch({ type: "SELECT_CHAT_ID", payload: user_id });
   };
 
-  const removeFile = (index) => {
-    const file = state.files.filter((_, i) => i !== index);
-    dispatch({ type: "REMOVE_FILES", payload: file });
-  };
 
-  const send = (text, audio) => {
-    // console.log(state.files);
-    // console.log(text);
-    if (state.files.length !== 0 || text.length !== 0) {
-      const fileMessages = state.files.map((file) => {
-        const fileType = file.type.split("/")[0];
-        if (fileType === "image") {
-          return {
-            user: "sender",
-            html: (
-              <img
-                src={URL.createObjectURL(file)}
-                height={"100px"}
-                alt={file.name}
-              />
-            ),
-            attachment: true,
-          };
-        } else if (fileType === "video") {
-          return {
-            user: "sender",
-            html: <video src={URL.createObjectURL(file)} />,
-            attachment: true,
-          };
-        } else if (fileType === "audio") {
-          return {
-            user: "sender",
-            html: <audio src={URL.createObjectURL(file)} controls />,
-            attachment: true,
-          };
-        } else if (fileType === "application" && file.name.endsWith(".pdf")) {
-          return {
-            user: "sender",
-            html: (
-              <>
-                <div class="pdf-thumbnail">
-                  <a
-                    href={URL.createObjectURL(file)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <PictureAsPdfIcon />
-                  </a>
-                </div>
-                <a
-                  href={URL.createObjectURL(file)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {file.name}
-                </a>
-              </>
-            ),
-            attachment: true,
-          };
-        } else {
-          return {
-            user: "sender",
-            html: (
-              <a
-                href={URL.createObjectURL(file)}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {file.name}
-              </a>
-            ),
-            attachment: true,
-          };
-        }
+ 
+  // const handleAttachment = (e) => {
+  //   const selectedFiles = Array.from(e.target.files);
+  //   console.log(selectedFiles);
+  //   selectedFiles.map((file)=>{
+
+  //     var reader = new FileReader();
+        
+  //     reader.onload = (event) => {
+  //       var type = file.type
+  //       var fileData = event.target.result;
+  //       console.log(type);
+  //       dispatch({ type: "ADD_FILES", payload: {data:fileData,type:type} });
+  //     };
+  
+  //     reader.readAsDataURL(file);
+  //   })
+    
+  // };
+
+  // const removeFile = (index) => {
+  //   const file = state.files.filter((_, i) => i !== index);
+  //   dispatch({ type: "REMOVE_FILES", payload: file });
+  // };
+
+  // const send = ({ chat_id, text = "", audio = null }) => {
+    
+  //   if (state.files.length !== 0 || text.length !== 0) {
+  //       const fileMessages = state.files.map((file) => {
+  //         const fileType = file.type.split("/")[0];
+
+  //         if (fileType === "image") {
+  //           return {
+  //             user: user._id,
+  //             html: (
+  //               <img
+  //                 src={file.data}
+  //                 height={"100px"}
+  //                 alt="img"
+  //               />
+  //             ),
+  //             attachment: true,
+  //           };
+  //         } else if (fileType === "video") {
+  //           return {
+  //             user: user._id,
+  //             html:<video>
+  //               <source src={file.data} controls/>
+  //             </video>,
+  //             attachment: true,
+  //           };
+  //         } else if (fileType === "audio") {
+  //           return {
+  //             user: user._id,
+  //             html: <audio src={file.data} controls />,
+  //             attachment: true,
+  //           };
+  //         } else if (fileType === "application" && file.name.endsWith(".pdf")) {
+  //           return {
+  //             user: user._id,
+  //             html: (
+  //               <>
+  //                 <div class="pdf-thumbnail">
+  //                   <a
+  //                     href={file.data}
+  //                     target="_blank"
+  //                     rel="noopener noreferrer"
+  //                   >
+  //                     <PictureAsPdfIcon />
+  //                   </a>
+  //                 </div>
+  //                 <a
+  //                   href={file.data}
+  //                   target="_blank"
+  //                   rel="noopener noreferrer"
+  //                 >
+  //                   {file.name}
+  //                 </a>
+  //               </>
+  //             ),
+  //             attachment: true,
+  //           };
+  //         } else {
+  //           return {
+  //             user: user._id,
+  //             html: (
+  //               <a
+  //                 href={URL.createObjectURL(file)}
+  //                 target="_blank"
+  //                 rel="noopener noreferrer"
+  //               >
+  //                 {file.name}
+  //               </a>
+  //             ),
+  //             attachment: true,
+  //           };
+  //         }
+  //       });
+  //     const messages = [...fileMessages, {user: user._id,text: text }];
+  //     sendSocketMSg(messages,chat_id);
+  //     console.log("sending msg");
+  //     dispatch({ type: "SEND_MESSAGE", payload: messages });
+  //     // Clear files
+  //     dispatch({ type: "CLEAR_FILES" });
+
+  //     //update chatbox
+  //     dispatch({ type: "UPDATE_MESSAGE", payload: {message:[...messages],id:chat_id} });
+
+  //   } else if (audio) {
+  //     console.log(audio);
+  //     var reader = new FileReader();
+        
+  //     reader.onload = (event) => {
+  //       var fileData = event.target.result;
+  //       const messages = {
+  //         user: user._id,
+  //         html: (
+  //           <audio src={fileData} controls className="col-9" />
+  //         ),
+  //         attachment: true,
+  //       };
+  //       console.log(messages);
+  
+  //       dispatch({ type: "SEND_MESSAGE", payload: [messages] });
+  //       sendSocketMSg([messages],chat_id);
+        
+  //       //update chatbox
+  //       dispatch({ type: "UPDATE_MESSAGE", payload: {message:[messages],id:chat_id} });
+       
+  //     };
+  
+  //     reader.readAsDataURL(audio);
+
+    
+  //   }
+  // };
+  // const sendSocketMSg = (message, chat_id) => {
+  //   socket.emit("message", message, chat_id,user._id);
+  // };
+
+  // const recieve_message = ( message,chat_id )=>{
+  //   const messages = [...message];
+  //   console.log(messages);
+  //   dispatch({ type: "SEND_MESSAGE", payload: messages });
+
+  //   dispatch({ type: "UPDATE_MESSAGE", payload: {message:[...messages],id:chat_id} });
+  // }
+  const createShout = async (new_shout) => {
+    console.log(token,new_shout);
+    const config = {
+      headers: {
+        token: token,
+      },
+    };
+    try {
+      const res = await axios.post(
+        `http://localhost:4500/${username}/create_shout`,
+        new_shout,
+        config
+      );
+      dispatch({
+        type: "ADD_SHOUT",
+        payload: [res.data],
       });
-      const messages = [...fileMessages, { text: text }];
-
-      dispatch({ type: "SEND_MESSAGE", payload: messages });
-      // Clear files
-      dispatch({ type: "CLEAR_FILES" });
-    } else if (audio) {
-      const messages = {
-        user: "sender",
-        html: (
-          <audio src={URL.createObjectURL(audio)} controls className="col-12" />
-        ),
-        attachment: true,
-      };
-
-      dispatch({ type: "SEND_MESSAGE", payload: [messages] });
+    } catch (error) {
+      dispatch({
+        type: "USER_ERROR",
+        payload: error.response,
+      });
     }
   };
+  const getShout = async () => {
 
+    const config = {
+      headers: {
+        token: token,
+      },
+    };
+    try {
+      const res = await axios.get(
+        `http://localhost:4500/${username}/get_shouts`,
+        config
+      );
+      console.log(res.data)
+      dispatch({
+        type: "GET_SHOUT",
+        payload: res.data,
+      });
+    } catch (error) {
+      dispatch({
+        type: "USER_ERROR",
+        payload: error.response,
+      });
+    }
+  };
+  const moreShout = async () => {
+    let offset_id = state.shouts[state.shouts.length-1]['createdAt'];
+    const config = {
+      headers: {
+        token: token,
+      },
+    };
+    try {
+      const res = await axios.post(
+        `http://localhost:4500/${username}/more_shouts`,
+        {offset_id},
+        config
+      );
+      console.log(res.data)
+      dispatch({
+        type: "MORE_SHOUT",
+        payload: res.data,
+      });
+    } catch (error) {
+      dispatch({
+        type: "USER_ERROR",
+        payload: error.response,
+      });
+    }
+  };
+  const likeShout = async (id)=>{
+    const config = {
+      headers: {
+        token: token,
+      },
+    };
+    try {
+      const res = await axios.put(
+        `http://localhost:4500/${username}/like_shout`,
+        {id},
+        config
+      );
+        console.log('like_shout',res);
+      dispatch({
+        type: "LIKE_SHOUT",
+        payload: res.data,
+      });
+    } catch (error) {
+      dispatch({
+        type: "USER_ERROR",
+        payload: error.response,
+      });
+    }
+  }
+  const addLike = async (id)=>{
+  console.log('addlike',id);
+    dispatch({
+      type: "ADD_LIKE",
+      payload:id,
+    });
+ 
+    
+  }
   return (
     <ShoutContext.Provider
       value={{
-        contacts: state.contacts,
+        shouts: state.shouts,
         chatbox: state.chatbox,
         message: state.message,
         files: state.files,
         loading: state.loading,
         time: state.time,
-        handleAttachment,
-        removeFile,
-        send,
+        // handleAttachment,
+        // removeFile,
+        // send,
+        // recieve_message,
+        createShout,
+        getShout,
+        moreShout,
+        likeShout,
+        addLike
       }}
     >
       {props.children}

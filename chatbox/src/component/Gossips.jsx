@@ -30,11 +30,11 @@ function Gossips({ onCloseClick }) {
 
           mediaRecorder.addEventListener("dataavailable", (event) => {
             audioChunks.push(event.data);
-            console.log("pushed");
+            // console.log("pushed");
           });
 
           mediaRecorder.addEventListener("stop", () => {
-            console.log("stopped");
+            // console.log("stopped");
             const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
 
             send({chat_id:chatId,audio:audioBlob});
@@ -46,7 +46,7 @@ function Gossips({ onCloseClick }) {
 
           mediaRecorder.start();
           setRecording(true);
-          console.log("started");
+          // console.log("started");
         })
         .catch((error) => {
           console.log("Error accessing microphone:", error);
@@ -108,10 +108,8 @@ function Gossips({ onCloseClick }) {
                             height={e.html.props.height}/>
                             </video>
                            :<></>}
-                           {e.html?.type=='audio'?<img
-                            src={e.html.props.src}
-                            alt={e.html.props.alt}
-                            height={e.html.props.height}
+                           {e.html?.type=='audio'?<audio
+                            {...e.html.props}
                           />:<></>}
                         <p>{e.text}</p>
                       </div>
@@ -170,7 +168,6 @@ function Gossips({ onCloseClick }) {
               placeholder="Type your message..."
               value={text || ""}
               onChange={(e) => {
-                console.log(e.target.value);
                 setText(e.target.value);
               }}
             />

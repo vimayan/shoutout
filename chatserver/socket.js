@@ -7,7 +7,7 @@ function initialize(server) {
   io = socketIO(server, { cors: { origin: "*" } });
   io.on("connection", (socket) => {
     sockets = socket;
-    // console.log("Socket connected:", socket.id);
+
     socket.join("shouts"); //connecting user to public
 
     socket.on("connectPeers", (user) => {
@@ -18,8 +18,12 @@ function initialize(server) {
         socket_id: socket.id,
       };
       const contacts = user.contacts;
+      if(user.contacts.length<20){
+        socket.broadcast.emit('new_connection',user_data);
+      }
       for (let i = 0; i < contacts.length; i++) {
-        // console.log("this is peer contact", contacts[i].userid);
+         socket.join(`${contacts[i].userid}_connection`);
+         io.to(`${contacts[i].userid}_connection`).emit('new_connection',user_data);
         //giving the specific id to all the contact groups
         socket.to(contacts[i].userid).emit("store", user_data);
       }
@@ -33,11 +37,20 @@ function initialize(server) {
     socket.on("reconnect", (socket_id, user) => {
       io.to(socket_id).emit("restore", user);
     });
+    socket.on('give_connection',(socket_id,user)=>{
+      io.to(socket_id).emit('set_connection',user);
+    })
+    socket.on('change_user',(socket_id)=>{
+      console.log('user changing',socket_id);
+        io.to(socket_id).emit('getuser')
+    });
+    socket.on('like_shout',(id)=>{
+      socket.broadcast.emit('add_like', id);
+    })
+    // socket.on("webrtcOffer", (offer,peerId, user_id, callback) => {
+    //       // socket.to(user_id).emit("checking", offer, user_id, socket.id);
 
-    // socket.on("webrtcOffer", (offer, user_id, callback) => {
-    //       socket.to(user_id).emit("checking", offer, user_id, socket.id);
-
-    //   socket.broadcast.to(user_id).emit("offer", offer, user_id, socket.id);
+    //   socket.to(peerId).emit("offer", offer, user_id, socket.id);
     //   callback("offer shared");
     //   console.log("offer shared ", user_id);
     // });
@@ -45,18 +58,17 @@ function initialize(server) {
     //   socket.to(socket_id).emit("answer", answer, user_id);
 
     //   callback("answer sended");
-    //   console.log("answer sended ", socket_id);
+    //   console.log("answer sended ", socket_id,answer);
     // });
-
+   
     socket.on("message", (data, user_id,sender_id) => {
-      console.log('message',data);
-      socket.to(user_id).emit("gossips", data,sender_id,socket.id);
+      console.log('gossip msg')
+      socket.to(user_id).emit("gossips", data,sender_id);
      
     });
   });
 }
 
-// console.log("this is from socket", sockets);
 
 function getIO() {
   return io;

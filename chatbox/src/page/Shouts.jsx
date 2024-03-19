@@ -2,12 +2,17 @@ import React, { useContext, useEffect, useState } from "react";
 import ShoutFights from "../component/chatbox/ShoutFights";
 import ShoutList from "../component/ShoutLists";
 import UserContext from "../context/user/UserContext";
+import ShoutContext from "../context/shouts/ShoutContext";
 
 function Shouts() {
   const [isShoutFightOpen, setIsShoutFightOpen] = useState(false);
 
   const usercontext = useContext(UserContext);
-  const { handleOffer,handleRemoteAnswer, socket } = usercontext;
+  const {socket,user } = usercontext;
+  const shoutcontext = useContext(ShoutContext); 
+ 
+  const {createShout } = shoutcontext;
+  const [text,setText] = useState('')
 
   const handleListClick = () => {
     setIsShoutFightOpen(!isShoutFightOpen);
@@ -39,7 +44,13 @@ function Shouts() {
             isShoutFightOpen ? "d-none d-md-block" : ""
           }`}
         >
+          
+          <div className="pt-4 col-11 col-md-5 col-lg-5  d-flex align-items-end justify-content-center gap-1 position-absolute z-1">
+            <textarea className="col-8" name="" id="" rows="3" value={text} onChange={(e)=>setText(e.target.value)}></textarea>
+            <button className="btn btn-danger" onClick={()=>createShout({text:text,username:user['firstname']})}>ShoutOut</button>
+          </div>
           <div className="pt-5 d-lg-none"></div>
+          <div className="pt-5"></div>
           <ShoutList onItemClick={handleListClick} />
         </div>
       </div>

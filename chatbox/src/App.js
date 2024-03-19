@@ -12,6 +12,7 @@ import Gossipers from "./page/Gossipers";
 import Landing from "./page/Landing";
 import GossipGroups from "./page/GossipGroups";
 import Login from "./page/Login";
+import Connections from "./component/Connections";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
 
           <Route path="/:user/" element={<GossipPannel />}>
             <Route index element={<Shouts />} />
+            <Route path="connections" element={<Connections />} />
             <Route path="gossipers" element={<Gossipers />} />
             <Route path="groups" element={<GossipGroups />} />
             <Route path="settings" element={<Gossipers />} />

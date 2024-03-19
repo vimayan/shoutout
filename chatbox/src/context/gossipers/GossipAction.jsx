@@ -37,11 +37,7 @@ function GossipAction(props) {
     dispatch({ type: "SELECT_CHAT_ID", payload: user_id });
   };
 
-  // const handleAttachment = (e) => {
-  //   const selectedFiles = Array.from(e.target.files);
-    
-  //   dispatch({ type: "ADD_FILES", payload: selectedFiles });
-  // };
+
 
   const handleAttachment = (e) => {
     const selectedFiles = Array.from(e.target.files);
@@ -68,8 +64,6 @@ function GossipAction(props) {
   };
 
   const send = ({ chat_id, text = "", audio = null }) => {
-    // console.log(state.files);
-    // console.log(text);
     
     if (state.files.length !== 0 || text.length !== 0) {
         const fileMessages = state.files.map((file) => {
@@ -144,6 +138,7 @@ function GossipAction(props) {
         });
       const messages = [...fileMessages, {user: user._id,text: text }];
       sendSocketMSg(messages,chat_id);
+      console.log("sending msg");
       dispatch({ type: "SEND_MESSAGE", payload: messages });
       // Clear files
       dispatch({ type: "CLEAR_FILES" });
@@ -153,22 +148,28 @@ function GossipAction(props) {
 
     } else if (audio) {
       console.log(audio);
-
-      const messages = {
-        user: user._id,
-        html: (
-          <audio src={URL.createObjectURL(audio)} controls className="col-12" />
-        ),
-        attachment: true,
+      var reader = new FileReader();
+        
+      reader.onload = (event) => {
+        var fileData = event.target.result;
+        const messages = {
+          user: user._id,
+          html: (
+            <audio src={fileData} controls className="col-9" />
+          ),
+          attachment: true,
+        };
+        console.log(messages);
+  
+        dispatch({ type: "SEND_MESSAGE", payload: [messages] });
+        sendSocketMSg([messages],chat_id);
+        
+        //update chatbox
+        dispatch({ type: "UPDATE_MESSAGE", payload: {message:[messages],id:chat_id} });
+       
       };
-      console.log(messages);
-
-      dispatch({ type: "SEND_MESSAGE", payload: [messages] });
-      sendSocketMSg([messages],chat_id);
-      
-      //update chatbox
-      dispatch({ type: "UPDATE_MESSAGE", payload: {message:[...messages],id:chat_id} });
-   
+  
+      reader.readAsDataURL(audio);
 
     
     }

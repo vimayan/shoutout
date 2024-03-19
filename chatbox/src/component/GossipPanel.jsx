@@ -33,6 +33,7 @@ import { Link, Outlet } from "react-router-dom";
 import UserContext from "../context/user/UserContext";
 import GossipContext from "../context/gossipers/GossipContext";
 import { useNavigate } from "react-router-dom";
+import ShoutContext from "../context/shouts/ShoutContext";
 
 const drawerWidth = 310;
 
@@ -91,18 +92,24 @@ function ResponsiveDrawer(props) {
   const navigate = useNavigate();
   
   const usercontext = React.useContext(UserContext);
-  const {socket,user,getUser,
+  const {socket,user,getUser,setCircle,people_circle,
+    getUserUpdate,
     handleOffer,
     handleRemoteAnswer,
     createPeerConnection,
     peerConnection, } = usercontext;
+
+
   const gossipContext = React.useContext(GossipContext);
 
   const {people,store_connects,store_reconnects,setChat,recieve_message} = gossipContext;
 
+  const shoutcontext = React.useContext(ShoutContext);
+  const { getShout,addLike } = shoutcontext;
 
   const { window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
+
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -121,6 +128,7 @@ function ResponsiveDrawer(props) {
 
   React.useEffect(()=>{
     if(socket){
+
       socket.on('restore',(contact)=>{
         store_reconnects(contact)
       })
@@ -128,39 +136,57 @@ function ResponsiveDrawer(props) {
       socket.on('store',(contact)=>{
         store_connects(contact);
       });
-      socket.on('gossips',(data,sender_id,socket_id)=>{
-        console.log('message',data);
+   
+      socket.on('gossips',(data,sender_id)=>{
+        console.log('gossips');
         recieve_message(data,sender_id)
       })
+
+      socket.on('new_connection', (newuser)=>{
+        console.log(newuser);
+        if(newuser.userid!=user._id){
+          if(people_circle.length<30){
+            setCircle(newuser);
+            const user_data = {
+              name: user["firstname"],
+              userid: user["_id"],
+              socket_id: socket.id,
+            };
+            socket.emit('give_connection',newuser.socket_id,user_data);
+          }       
+        }
+      
+      });
+      socket.on('set_connection',(newuser)=>{
+        console.log('set_connection',newuser);
+        setCircle(newuser);
+      });
+
+      socket.on('getuser',()=>{
+        console.log('getUserUpdate');
+        getUserUpdate();
+      })
+      
+    }
+   
+  },[socket])
+  React.useEffect(()=>{
+    if(socket){ 
+
+      socket.on('add_like',(id)=>{
+        console.log('add_like');
+        addLike(id)
+      })
+      
     }
    
   },[socket])
 
-
-
+  React.useEffect(() => {
+    console.log('shoutlists');
+    getShout();
+  }, []);
  
-
-//webRtc
-  // React.useEffect(()=>{
-  //   if (contacts) (contacts).forEach((element) => {
-  //       createPeerConnection(element._id);
-  //     });
-  //    console.log(peerConnection)
-  // },[socket])
-
-  // React.useEffect(() => {
-  //   socket.on("offer", (offer, user_id, socket_id) => {
-  //     console.log("offer recieved", user_id);
-  //     handleOffer({ offer: offer, peerId: user_id, socket_id: socket_id });
-  //   });
-  // }, [user]);
-
-  // React.useEffect(() => {
-  //   socket.on("answer", (answer, user_id) => {
-  //     console.log("answer", user_id);
-  //     handleRemoteAnswer(answer, user_id);
-  //   });
-  // }, [user]);
 
 
   const drawer = (
@@ -181,7 +207,6 @@ function ResponsiveDrawer(props) {
       <List>
         {[
           { text: "Shouts", path: "" },
-          { text: "Create Shouts", path: "createshouts" },
           { text: "Recent Shouts", path: "recentshouts" },
         ].map((Item, index) => (
           <ListItem key={Item.text} disablePadding>
@@ -202,7 +227,8 @@ function ResponsiveDrawer(props) {
       <Divider />
       <List>
         {[
-          { text: "Gossipers", path: "gossipers" },
+          { text: "Connections", path: "connections" },
+          { text: "Gossips", path: "gossipers" },
           { text: "Group Gossips", path: "groups" },
         ].map((Items, index) => (
           <ListItem key={Items.text} disablePadding>
@@ -243,7 +269,7 @@ function ResponsiveDrawer(props) {
               variant="h5"
               noWrap
               component="a"
-              href=""
+              // href=""
               sx={{
                 mr: 2,
                 display: { xs: "flex" },
@@ -259,7 +285,7 @@ function ResponsiveDrawer(props) {
             </Typography>
             <Box display={"flex"} gap={2}>
               <Box display={{ xs: "none", whiteSpace: "nowrap", sm: "flex" }}>
-                <Button name={"Top Shouts"} />
+                <button className="btn btn-success"  onClick={getShout} >New Shouts</button>
                 <Search>
                   <SearchIconWrapper>
                     <SearchIcon />
@@ -296,7 +322,7 @@ function ResponsiveDrawer(props) {
                 inputProps={{ "aria-label": "search" }}
               />
             </Search>
-            <Button name={"Top Shouts"} />
+           <button className="btn btn-success"  onClick={getShout} >New Shouts</button>
           </Box>
         </AppBar>
         <Box
@@ -351,5 +377,6 @@ ResponsiveDrawer.propTypes = {
    */
   window: PropTypes.func,
 };
+
 
 export default ResponsiveDrawer;

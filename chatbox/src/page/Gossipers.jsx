@@ -11,21 +11,6 @@ function Gossipers() {
   };
 
 
-
-
-
-  // useEffect(() => {
-  //   const token = localStorage.getItem("token");
-  //   if (token && contacts) {
-  //     contacts.forEach(async (element) => {
-  //       const peerConnection = await createPeerConnection(element._id);
-  //       // console.log(peerConnection); // Check if the peerConnection object is available
-  //     });
-  //   }
-  // }, [socket]);
-
- 
-
   return (
     <div className="container-fluid" id="shouts">
       <div className="row position-relative">
