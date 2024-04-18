@@ -4,7 +4,9 @@ const bcrypt = require("bcryptjs");
 const joi = require("joi");
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
-
+const getAccessToken = require("./googleAuth2");
+// const { getIO, getSocket } = require("../socket");
+// const {AnswerRtc,offerRtc}= require('./connection')
 
 const registerSchema = joi.object({
   email: joi.string().min(6).required(),
@@ -42,15 +44,66 @@ exports.createUser = async (req, res) => {
       groups: [],
       pending_request: [],
       recieved_request: [],
-      isverified:true,
     });
 
     await userAccount.save();
+    const Token = new TokenSchema({
+      userid: userAccount._id,
+      token: crypto.randomBytes(32).toString("hex"),
+    });
+    Token.save();
 
+    const link = `${process.env.URL}/verify/${firstname}?_id=${userAccount._id}&token=${Token.token}`;
 
-    return res
-    .status(200)
-    .send("Account created pls Login");
+    const accessToken = await getAccessToken(); //getting th eaccess token
+    //const accessToken = "ya29.a0Ad52N38vMkrcfHf5YN0YSGINDH7RAgQiWB-foiAmNoBqSNxQVABk7dnqqB3qAX811yecF41jufEbZ9EvNTQgg-v_7bafoL6r8IOypVOSAdEiGh1xlziqqZ3TuTQHItup3TwTpTWL6x50uBntv9i4Rht1ThrreK_KvZ0daCgYKAeYSARMSFQHGX2Misp8mdQJLpCsgyNkQsVK49w0171"; //getting th eaccess token
+
+    // preparing the nodemail
+    const transporter = await nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        type: "OAuth2",
+        user: process.env.userMail,
+        accessToken: accessToken,
+        clientId: process.env.clientId,
+        clientSecret: process.env.secret,
+        refreshToken: process.env.refreshToken,
+      },tls: {
+        rejectUnauthorized: false
+      }
+    });
+
+    // let transporter = nodemailer.createTransport({
+    //   service: "gmail",
+    //   auth: {
+    //     type: "OAuth2",
+    //     user: process.env.userMail, // Your Gmail username
+    //     pass: 'iamdonkeycoder', // Your Gmail password
+    //     clientId: process.env.clientId, // Your OAuth client ID
+    //     clientSecret: process.env.secret, // Your OAuth client secret
+    //     refreshToken: process.env.refreshToken, // Your OAuth refresh token
+    //     // accessToken: accessToken
+    //   },
+    // });
+
+    const mailOptions = {
+      from: process.env.userMail,
+      to: userAccount.email,
+      subject: "verify user",
+      html: link,
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error("Error sending email:", error);
+        return res.status(500).send("couldn't send the mail");
+      } else {
+        console.log("Email sent:", info.response);
+        return res
+          .status(200)
+          .send("pls click on the link in your email to verify");
+      }
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).send("An error occured");
@@ -119,6 +172,23 @@ exports.loginUser = async (req, res) => {
     } else {
       const token = jwt.sign({ _id: user._id }, process.env.SECRET_KEY);
 
+      // getting socket
+      // const socket = await getSocket();
+      // console.log(socket.id);
+
+      // // creating room for the user_contacts
+      // socket.join(user._id);
+
+      // const contacts = user.contacts;
+      // console.log(contacts);
+      // for (let i = 0; i < contacts.length; i++) {
+      //   socket.join(contacts[i]._id);
+      // }
+      // //creating room for the groups
+      // const groups = user.groups;
+      // for (let i = 0; i < groups.length; i++) {
+      //   socket.join(groups[i]._id);
+      // }
 
       res.json({
         token: token,

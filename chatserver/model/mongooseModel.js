@@ -93,7 +93,9 @@ const shoutSchema = mongoose.Schema({
       complaint: { type: String },
     },
   ],
-  createdAt: { type: Date, default: Date.now(), expires: 36000 },
+  // createdAt: { type: Date, default: Date.now(), expires: 36000 },
+  
+  createdAt: { type: Date, default: Date.now()},
 });
 
 const groupSchema = mongoose.Schema({
