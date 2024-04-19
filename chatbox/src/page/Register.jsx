@@ -41,7 +41,7 @@ export default function Register() {
     onSubmit: (userdata) => {
       console.log(userdata);
       axios
-        .post("http://localhost:4500/create-user", userdata)
+        .post("https://shoutout-server.onrender.com/create-user", userdata)
         .then((response) => {
           setType("success");
           setRegister(true);

@@ -105,7 +105,7 @@ function ResponsiveDrawer(props) {
   const {people,store_connects,store_reconnects,setChat,recieve_message} = gossipContext;
 
   const shoutcontext = React.useContext(ShoutContext);
-  const { getShout,addLike } = shoutcontext;
+  const { getShout,addLike,setShoutChat,shouts,recieveShoutMessage } = shoutcontext;
 
   const { window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -124,6 +124,7 @@ function ResponsiveDrawer(props) {
 
   React.useEffect(() => {
     if(people?.length!=0){setChat(people[0].userid)}
+    if(shouts?.length!=0){setShoutChat(shouts[0]._id)}
   }, [socket]);
 
   React.useEffect(()=>{
@@ -177,7 +178,10 @@ function ResponsiveDrawer(props) {
         console.log('add_like');
         addLike(id)
       })
-      
+      socket.on('shouted',(data,shout_id,sender_name)=>{
+        console.log('shouted');
+        recieveShoutMessage(data,shout_id,sender_name)
+      })
     }
    
   },[socket])

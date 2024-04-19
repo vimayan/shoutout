@@ -13,7 +13,7 @@ function UserAction(props) {
     people_circle:[],
     error: {},
   };
-  const url = "http://localhost:4500";
+  const url = "https://shoutout-server.onrender.com";
   const [state, dispatch] = useReducer(UserReducer, userInitial);
 
   const token = localStorage.getItem("token");
@@ -54,7 +54,7 @@ function UserAction(props) {
     };
     try {
       const res = await axios.get(
-        `http://localhost:4500/${username}/getuser`,
+        `https://shoutout-server.onrender.com/${username}/getuser`,
         config
       );
       console.log(res.data);
@@ -80,7 +80,7 @@ function UserAction(props) {
     };
     try {
       const res = await axios.get(
-        `http://localhost:4500/${username}/getuser`,
+        `https://shoutout-server.onrender.com/${username}/getuser`,
         config
       );
       dispatch({
@@ -402,7 +402,7 @@ function UserAction(props) {
     };
     try {
       const res = await axios.post(
-        `http://localhost:4500/${username}/addfriend`,
+        `https://shoutout-server.onrender.com/${username}/addfriend`,
         user_data,
         config
       );
@@ -436,7 +436,7 @@ function UserAction(props) {
       };
       try {
         const res = await axios.post(
-          `http://localhost:4500/${username}/add_request`,
+          `https://shoutout-server.onrender.com/${username}/add_request`,
           user_data,
           config
         );
@@ -470,7 +470,7 @@ function UserAction(props) {
     };
     try {
       const res = await axios.post(
-        `http://localhost:4500/${username}/remove_request`,
+        `https://shoutout-server.onrender.com/${username}/remove_request`,
         user_data,
         config
       );
@@ -500,7 +500,7 @@ function UserAction(props) {
     };
     try {
       const res = await axios.post(
-        `http://localhost:4500/${username}/remove_pending`,
+        `https://shoutout-server.onrender.com/${username}/remove_pending`,
         user_data,
         config
       );

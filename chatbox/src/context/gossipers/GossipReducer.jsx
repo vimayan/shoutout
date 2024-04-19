@@ -8,18 +8,21 @@ const GroupReducer = (state, action) => {
     case "UPDATE_MESSAGE":
       return {
         ...state,
-        chatbox: state.chatbox[action.payload["id"]]?.length > 0 ?
-          {
-            ...state.chatbox,
-            [action.payload['id']]: [...state.chatbox[action.payload["id"]], ...action.payload["message"]]
-          } :
-          {
-            ...state.chatbox,
-            [action.payload["id"]]: action.payload['message']
-          },
+        chatbox:
+          state.chatbox[action.payload["id"]]?.length > 0
+            ? {
+                ...state.chatbox,
+                [action.payload["id"]]: [
+                  ...state.chatbox[action.payload["id"]],
+                  ...action.payload["message"],
+                ],
+              }
+            : {
+                ...state.chatbox,
+                [action.payload["id"]]: action.payload["message"],
+              },
       };
-      
-      
+
     case "SELECT_CHAT_ID":
       return {
         ...state,
@@ -33,7 +36,7 @@ const GroupReducer = (state, action) => {
     case "ADD_FILES":
       return {
         ...state,
-        files: [...state.files, {...action.payload}],
+        files: [...state.files, { ...action.payload }],
       };
 
     case "REMOVE_FILES":
@@ -53,19 +56,27 @@ const GroupReducer = (state, action) => {
         loading: true,
       };
     case "STORE_PEOPLE":
-        return{
-          ...state,
-          people:state.people.find((people)=>people.userid==action.payload.userid)?state.people.map((people) =>
-          people.userid === action.payload.userid ? action.payload : people
-        ):[...state.people,action.payload]
-        }
-        case "RESTORE_PEOPLE":
-          return{
-            ...state,
-            people:state.people.find((people)=>people.userid==action.payload.userid)?state.people.map((people) =>
-            people.userid === action.payload.userid ? action.payload : people
-          ):[...state.people,action.payload]
-          }
+      return {
+        ...state,
+        people: state.people.find(
+          (people) => people.userid == action.payload.userid
+        )
+          ? state.people.map((people) =>
+              people.userid === action.payload.userid ? action.payload : people
+            )
+          : [...state.people, action.payload],
+      };
+    case "RESTORE_PEOPLE":
+      return {
+        ...state,
+        people: state.people.find(
+          (people) => people.userid == action.payload.userid
+        )
+          ? state.people.map((people) =>
+              people.userid === action.payload.userid ? action.payload : people
+            )
+          : [...state.people, action.payload],
+      };
     case "DAILY_ERROR":
       return {
         ...state,

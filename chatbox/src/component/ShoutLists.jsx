@@ -42,11 +42,12 @@ export default function ShoutList(props) {
             </ListItem>
           ))}
       </List>
+      
       <Stack direction="row" sx={{justifyContent:'flex-end'}} >
     
-      <Button variant="contained" onClick={moreShout}  endIcon={<ArrowDropDownIcon/>}>
+     { shouts?.length != 0 && <Button variant="contained" onClick={moreShout}   endIcon={<ArrowDropDownIcon/>}>
         More
-      </Button>
+      </Button>}
     </Stack>
     </Box>
   );

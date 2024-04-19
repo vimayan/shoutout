@@ -1,0 +1,10 @@
+
+
+#Landing{
+    background-image: url(https://images.pexels.com/photos/1111368/pexels-photo-1111368.jpeg?auto=compress&cs=tinysrgb&w=1800);
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: fixed;
+    background-size:cover;
+    height: 100vh;
+}

@@ -47,7 +47,9 @@ function Shouts() {
           
           <div className="pt-4 col-11 col-md-5 col-lg-5  d-flex align-items-end justify-content-center gap-1 position-absolute z-1">
             <textarea className="col-8" name="" id="" rows="3" value={text} onChange={(e)=>setText(e.target.value)}></textarea>
-            <button className="btn btn-danger" onClick={()=>createShout({text:text,username:user['firstname']})}>ShoutOut</button>
+            <button className="btn btn-danger" onClick={()=>{              
+              createShout({text:text,username:user['firstname']});
+              setText('');}}>ShoutOut</button>
           </div>
           <div className="pt-5 d-lg-none"></div>
           <div className="pt-5"></div>

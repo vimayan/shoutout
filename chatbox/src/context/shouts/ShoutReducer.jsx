@@ -35,6 +35,34 @@ const ShoutReducer = (state, action) => {
           }
         }),
       };
+      case "SELECT_MESSAGE":
+      return {
+        ...state,
+        message: action.payload,
+      };
+    case "UPDATE_MESSAGE":
+      return {
+        ...state,
+        chatbox:
+          state.chatbox[action.payload["id"]]?.length > 0
+            ? {
+                ...state.chatbox,
+                [action.payload["id"]]: [
+                  ...state.chatbox[action.payload["id"]],
+                  ...action.payload["message"],
+                ],
+              }
+            : {
+                ...state.chatbox,
+                [action.payload["id"]]: action.payload["message"],
+              },
+      };
+
+    case "SELECT_SHOUT_ID":
+      return {
+        ...state,
+        shoutId: action.payload,
+      };
     case "SEND_MESSAGE":
       return {
         ...state,
@@ -43,7 +71,7 @@ const ShoutReducer = (state, action) => {
     case "ADD_FILES":
       return {
         ...state,
-        files: [...state.files, ...action.payload],
+        files: [...state.files, { ...action.payload }],
       };
 
     case "REMOVE_FILES":

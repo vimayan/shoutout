@@ -50,8 +50,7 @@ navigate('/login')
     }),
     onSubmit: (userdata) => {
       axios
-        // .post("https://fitness-logger.onrender.com/request-password", userdata)
-        .post("http://localhost:4500/request-password", userdata)
+        .post("https://shoutout-server.onrender.com/request-password", userdata)
         .then((response)=>{
           console.log(response);
           setType("success");

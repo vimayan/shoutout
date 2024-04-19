@@ -4,12 +4,16 @@ import MicIcon from "@mui/icons-material/Mic";
 import SendIcon from "@mui/icons-material/Send";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ClearIcon from "@mui/icons-material/Clear";
-import GossipContext from "../../context/gossipers/GossipContext";
-// import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
-function ShoutFights({ onCloseClick }) {
-  const gossipContext = useContext(GossipContext);
+import ShoutContext from "../../context/shouts/ShoutContext";
+import UserContext from "../../context/user/UserContext";
 
-  const { handleAttachment, removeFile, send, message, files,chatId } = gossipContext;
+function Gossips({ onCloseClick }) {
+  const shoutContext = useContext(ShoutContext);
+  const userContext = useContext(UserContext);
+
+  const {user} =userContext;
+  const { handleShoutAttachment,  removeShoutFile,
+    sendShoutMessage, message, files,shoutId } = shoutContext;
   const [recording, setRecording] = useState(false);
   const audioRef = useRef(null);
   const [text, setText] = useState("");
@@ -32,7 +36,7 @@ function ShoutFights({ onCloseClick }) {
             console.log("stopped");
             const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
 
-            send({chat_id:chatId,audio:audioBlob});
+            sendShoutMessage({chat_id:shoutId,audio:audioBlob});
 
             audioChunks.length = 0;
           });
@@ -76,7 +80,7 @@ function ShoutFights({ onCloseClick }) {
           <div className="container-fluid py-5 py-md-auto" id="chat_body">
             {message &&
               message.map((e, i) =>
-                e.user === "user"?.toLowerCase() ? (
+                e.user === user._id?.toLowerCase() ? (
                   <div key={i} className="row mb-4 text-start">
                     <div className="col-8">
                       <div className="">
@@ -88,9 +92,16 @@ function ShoutFights({ onCloseClick }) {
                 ) : (
                   <div key={i} className="row mb-4">
                     <div className="col-8 ms-auto text-end">
-                      <div className="">
-                        {e.html}
+                      <div style={{backgroundColor:'white',color:'black',borderRadius:'4px'}}>
+                        <div className="me-2">
+                        {e[0].html}
                         <p>{e.text}</p>
+                        </div>
+                       
+                        <div style={{backgroundColor:'black',color:'whitesmoke',borderBottomLeftRadius:'4px',borderBottomRightRadius:'4px'}}>
+                        <sub>{e.username}</sub>
+                        </div>
+                       
                       </div>
                     </div>
                   </div>
@@ -111,7 +122,7 @@ function ShoutFights({ onCloseClick }) {
                   />
                   <ClearIcon
                     className="remove-icon"
-                    onClick={() => removeFile(index)}
+                    onClick={() => removeShoutFile(index)}
                   />
                 </div>
               </div>
@@ -125,7 +136,7 @@ function ShoutFights({ onCloseClick }) {
                 id="upload"
                 hidden
                 multiple
-                onChange={(e) => handleAttachment(e)}
+                onChange={(e) => handleShoutAttachment(e)}
               />
               <label htmlFor="upload">
                 {" "}
@@ -145,7 +156,7 @@ function ShoutFights({ onCloseClick }) {
             <button
               className="btn btn-success"
               onClick={() => {
-                send({text:text,chat_id:chatId});
+                sendShoutMessage({text:text,chat_id:shoutId});
                 setText("");
               }}
             >
@@ -166,4 +177,4 @@ function ShoutFights({ onCloseClick }) {
   );
 }
 
-export default ShoutFights;
+export default Gossips;
