@@ -1,10 +1,9 @@
 const { UserSchema, TokenSchema } = require("../model/mongooseModel");
-const nodemailer = require("nodemailer");
 const bcrypt = require("bcryptjs");
 const joi = require("joi");
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
-
+const sendEmail = require("./controller/sendmail");
 
 const registerSchema = joi.object({
   email: joi.string().min(6).required(),
@@ -24,8 +23,6 @@ exports.createUser = async (req, res) => {
   try {
     const { error } = await registerSchema.validateAsync(req.body);
 
-    // Save Tutorial in the database
-
     const users = await UserSchema.findOne({ email: email });
     if (users) {
       return res.status(400).end("email already exist");
@@ -42,15 +39,22 @@ exports.createUser = async (req, res) => {
       groups: [],
       pending_request: [],
       recieved_request: [],
-      isverified:true,
     });
 
     await userAccount.save();
+    const Token = new TokenSchema({
+      userid: userAccount._id,
+      token: crypto.randomBytes(32).toString("hex"),
+    });
+    Token.save();
 
+    const link = `${process.env.URL}/verify/${firstname}?_id=${userAccount._id}&token=${Token.token}`;
+
+    await sendEmail(email, "click here to verify your mail", link);
 
     return res
-    .status(200)
-    .send("Account created pls Login");
+      .status(200)
+      .send("verification link has been sent to your mail id");
   } catch (error) {
     console.log(error);
     return res.status(500).send("An error occured");
@@ -119,7 +123,6 @@ exports.loginUser = async (req, res) => {
     } else {
       const token = jwt.sign({ _id: user._id }, process.env.SECRET_KEY);
 
-
       res.json({
         token: token,
         user: user,
@@ -165,7 +168,7 @@ exports.requestPassword = async (req, res) => {
       return res.status(400).send("user with given email doesn't exist");
 
     let token = await TokenSchema.findOne({ userid: user._id });
-    // console.log(token);
+
     if (!token) {
       token = await new TokenSchema({
         userid: user._id,
@@ -174,34 +177,12 @@ exports.requestPassword = async (req, res) => {
     }
 
     const link = `${process.env.URL}/reset-password/${user._id}/${token.token}`;
-    const accessToken = await getAccessToken();
-    const transporter = await nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        type: "OAuth2",
-        user: process.env.userMail,
-        accessToken: accessToken,
-        clientId: process.env.clientId,
-        clientSecret: process.env.secret,
-        refreshToken: process.env.refreshToken,
-      },
-    });
-    const mailOptions = {
-      from: process.env.userMail,
-      to: user.email,
-      subject: "reset password",
-      html: link,
-    };
 
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.error("Error sending email:", error);
-        res.status(500).send("couldn't send the mail");
-      } else {
-        res.status(200).send("password reset link sent to your email account");
-        console.log("Email sent:", info.response);
-      }
-    });
+    await sendEmail(user.email, "reset password", link);
+
+    return res
+      .status(200)
+      .send("password reset link sent to your email account");
   } catch (error) {
     res.status(500).send("An error occured");
     console.log(error);
